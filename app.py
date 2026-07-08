@@ -179,7 +179,7 @@ with st.sidebar:
         if st.checkbox(label, value=True, key=key):
             selected_types.append(key)
 
-    generate = st.button("질문 풀 생성", type="primary", use_container_width=True)
+    generate = st.button("페르소나 및 질문 풀 생성", type="primary", use_container_width=True)
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 if generate:
