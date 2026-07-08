@@ -16,7 +16,7 @@ QUESTION_TYPES = [
 ]
 
 
-def build_prompt(story_text, patterns, character_info, core_message, opening_line, selected_types):
+def build_prompt(story_text, patterns, selected_types):
     return f"""
 Story Text:
 {story_text}
@@ -24,23 +24,17 @@ Story Text:
 Core Patterns for Pattern Practice:
 {patterns}
 
-Character Info:
-{character_info}
-
-Core Message: {core_message}
-Opening Line: {opening_line}
-
 Generate the following question types: {", ".join(selected_types)}
 
 Return a JSON object with this exact structure:
 {{
   "characterPersona": {{
-    "name": "character name",
-    "age": "age range",
-    "gender": "gender",
-    "personality": "personality description",
-    "coreMessage": "core message",
-    "openingLine": "opening line"
+    "name": "character name (derived from the story)",
+    "age": "age range (derived from the story)",
+    "gender": "gender (derived from the story)",
+    "personality": "personality description in English (derived from the story)",
+    "coreMessage": "core message in English (derived from the story)",
+    "openingLine": "opening line in English (derived from the story)"
   }},
   "questions": {{
     "patternPractice": [
@@ -96,6 +90,7 @@ Rules:
 - Questions should be from the character's first-person perspective ("What sport did I love?").
 - Acceptable criteria must be written in Korean.
 - All questions and answers must be in English.
+- characterPersona fields (name, age, gender, personality, coreMessage, openingLine) must ALL be written in English, derived from the story text.
 """
 
 
@@ -178,16 +173,6 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    st.subheader("캐릭터 정보")
-    character_info = st.text_area(
-        "캐릭터",
-        placeholder="이름: Judy\n나이: 9-11세\n성별: female\n성격: ...",
-        height=90,
-        label_visibility="collapsed",
-    )
-    core_message = st.text_input("Core Message", placeholder="Judy learned that her strength was inside her.")
-    opening_line = st.text_input("Opening Line", placeholder="Hi! I am Judy...")
-
     st.subheader("생성할 질문 유형")
     selected_types = []
     for key, label in QUESTION_TYPES:
@@ -207,7 +192,7 @@ if generate:
     else:
         with st.spinner("AI가 질문 풀을 생성하고 있습니다..."):
             try:
-                prompt = build_prompt(story_text, patterns, character_info, core_message, opening_line, selected_types)
+                prompt = build_prompt(story_text, patterns, selected_types)
                 raw = (
                     generate_with_openai(api_key, prompt)
                     if api_provider == "OpenAI"
@@ -223,12 +208,12 @@ if "result" in st.session_state:
     questions = result.get("questions", {})
 
     # Character Persona
-    with st.expander("캐릭터 페르소나", expanded=True):
+    with st.expander("Character Persona", expanded=True):
         c1, c2, c3 = st.columns(3)
-        c1.metric("이름", persona.get("name", "-"))
-        c2.metric("나이", persona.get("age", "-"))
-        c3.metric("성별", persona.get("gender", "-"))
-        st.markdown(f"**성격** {persona.get('personality', '')}")
+        c1.metric("Name", persona.get("name", "-"))
+        c2.metric("Age", persona.get("age", "-"))
+        c3.metric("Gender", persona.get("gender", "-"))
+        st.markdown(f"**Personality** {persona.get('personality', '')}")
         st.markdown(f"**Core Message** {persona.get('coreMessage', '')}")
         st.markdown(f"**Opening Line** *\"{persona.get('openingLine', '')}\"*")
 
