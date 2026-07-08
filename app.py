@@ -111,7 +111,7 @@ def generate_with_openai(api_key, prompt):
 def generate_with_gemini(api_key, prompt):
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash",
+        model_name="gemini-2.5-flash",
         generation_config=genai.GenerationConfig(
             response_mime_type="application/json",
             temperature=0.7,
