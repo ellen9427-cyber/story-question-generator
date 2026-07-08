@@ -82,7 +82,8 @@ Return a JSON object with this exact structure:
 
 Rules:
 - Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
-- patternPractice: use the provided core patterns as the sentences to repeat.
+- All questions within each type must be ordered by scene (SC01 before SC02, etc.), following the chronological flow of the story.
+- patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow.
 - recall: questions must be answerable directly from the story text only.
 - inference: questions require reading between the lines of the story.
 - transfer: questions ask the learner about their own experience or opinion, linked to story themes.
