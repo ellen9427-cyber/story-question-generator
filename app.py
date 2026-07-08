@@ -84,7 +84,7 @@ Rules:
 - Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
 - All questions within each type must be ordered by scene (SC01 before SC02, etc.), following the chronological flow of the story.
 - patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow.
-- recall: questions must be answerable directly from the story text only.
+- recall: questions must be answerable directly from the story text only. The acceptableCriteria for each recall question must specify the exact keyword(s) or key content that must appear in the answer — not a generic statement. Format: "'[keyword]'를 포함하여 말하면 정답으로 인정한다." or "[핵심 내용]이 드러나게 말하면 정답으로 인정한다." Include any important constraints (e.g., verb synonyms allowed, specific word variants accepted).
 - inference: questions require reading between the lines of the story.
 - transfer: questions ask the learner about their own experience or opinion, linked to story themes.
 - reflection: open-ended questions asking for evaluation or advice about story events.
