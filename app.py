@@ -16,13 +16,19 @@ QUESTION_TYPES = [
 ]
 
 
-def build_prompt(story_text, patterns, selected_types):
+def build_prompt(story_text, patterns, keywords, story_words, selected_types):
     return f"""
 Story Text:
 {story_text}
 
 Core Patterns for Pattern Practice:
 {patterns}
+
+Keywords (tutor may use these in questions):
+{keywords}
+
+Story Words (tutor must NOT use these words in questions — use simpler or different vocabulary instead):
+{story_words}
 
 Generate the following question types: {", ".join(selected_types)}
 
@@ -89,6 +95,8 @@ Rules:
 - transfer: questions ask the learner about their own experience or opinion, linked to story themes. The acceptableCriteria for each transfer question must be specific to that question — not a generic statement. Specify the type of response that counts as correct: relevant keywords, emotional vocabulary, categories of examples (e.g., sports/activities/situations), or meaningful content the learner's answer must include. Format: "[keyword 또는 카테고리 예시]를 포함하거나 [핵심 의미]가 드러나면 정답으로 인정한다."
 - reflection: open-ended questions asking for evaluation or advice about story events. The acceptableCriteria for each reflection question must be specific to that question — not a generic statement. Specify: (1) the expected response format if applicable (e.g., Yes/No followed by reasoning), (2) the keywords, meanings, or content categories that make an answer acceptable, and (3) if relevant, what makes an answer especially strong. Format: "Yes 또는 No라고 답한 뒤, [핵심 내용]을 포함하여 설명하면 정답으로 인정한다." or "[핵심 의미나 키워드]가 드러나면 정답으로 인정한다."
 - Questions should be from the character's first-person perspective ("What sport did I love?").
+- Match the vocabulary and sentence complexity of the questions to the level of the story text. Do not use words or structures more advanced than those found in the story.
+- The tutor's question wording may include provided Keywords, but must NOT use Story Words. Replace story words with simpler or alternative vocabulary that conveys the same meaning.
 - Acceptable criteria must be written in Korean.
 - All questions and answers must be in English.
 - characterPersona fields (name, age, gender, personality, coreMessage, openingLine) must ALL be written in English, derived from the story text.
@@ -174,6 +182,22 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
+    st.subheader("키워드 (질문에 사용 가능)")
+    keywords = st.text_area(
+        "키워드",
+        placeholder="tennis, racket, practice, confidence, ...",
+        height=70,
+        label_visibility="collapsed",
+    )
+
+    st.subheader("Story Words (질문에 사용 금지)")
+    story_words = st.text_area(
+        "스토리 단어",
+        placeholder="whispers, shimmering, silver, ...",
+        height=70,
+        label_visibility="collapsed",
+    )
+
     st.subheader("생성할 질문 유형")
     selected_types = []
     for key, label in QUESTION_TYPES:
@@ -193,7 +217,7 @@ if generate:
     else:
         with st.spinner("AI가 질문 풀을 생성하고 있습니다..."):
             try:
-                prompt = build_prompt(story_text, patterns, selected_types)
+                prompt = build_prompt(story_text, patterns, keywords, story_words, selected_types)
                 raw = (
                     generate_with_openai(api_key, prompt)
                     if api_provider == "OpenAI"
