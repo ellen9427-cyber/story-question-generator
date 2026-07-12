@@ -195,7 +195,7 @@ def build_excel(result, alt_texts):
     for type_key, type_label in QUESTION_TYPES:
         for q in result.get("questions", {}).get(type_key, []):
             scene = q.get("relatedScene", "")
-            target_answer = q.get("targetAnswer") or " / ".join(q.get("targetAnswers", []))
+            target_answer = q.get("targetAnswer") or ", ".join(q.get("targetAnswers", []))
             rows.append({
                 "Type": type_label,
                 "Question": q.get("question", ""),
@@ -297,7 +297,6 @@ with st.sidebar:
         accept_multiple_files=True,
         label_visibility="collapsed",
     )
-    generate_alt = st.button("Alt 텍스트 생성", use_container_width=True, disabled=not uploaded_images)
 
     st.subheader("핵심 패턴 (Pattern Practice용)")
     patterns = st.text_area(
@@ -331,36 +330,7 @@ with st.sidebar:
 
     generate = st.button("페르소나 및 질문 풀 생성", type="primary", use_container_width=True)
 
-# ── Alt 텍스트 생성 ───────────────────────────────────────────────────────────
-if generate_alt and uploaded_images:
-    if not api_key.strip():
-        st.error("API 키를 입력해주세요.")
-    else:
-        alt_texts = {}
-        progress = st.progress(0, text="Alt 텍스트 생성 중...")
-        try:
-            for i, img_file in enumerate(uploaded_images):
-                scene_key = f"SC{i + 1:02d}"
-                img_file.seek(0)
-                image_bytes = img_file.read()
-                mime_type = img_file.type or "image/jpeg"
-                alt_texts[scene_key] = generate_alt_text(
-                    api_key, api_provider, image_bytes, mime_type, scene_key, story_text
-                )
-                progress.progress((i + 1) / len(uploaded_images), text=f"{scene_key} 완료")
-            st.session_state["alt_texts"] = alt_texts
-        except Exception as e:
-            st.error(f"Alt 생성 오류: {e}")
-        finally:
-            progress.empty()
-
-# Alt 텍스트 결과 표시
-if "alt_texts" in st.session_state and st.session_state["alt_texts"]:
-    with st.expander("생성된 Alt 텍스트", expanded=False):
-        for scene_key, alt in sorted(st.session_state["alt_texts"].items()):
-            st.markdown(f"**{scene_key}** {alt}")
-
-# ── 질문 풀 생성 ──────────────────────────────────────────────────────────────
+# ── 페르소나 및 질문 풀 생성 (+ alt 텍스트 통합) ─────────────────────────────
 if generate:
     if not story_text.strip():
         st.error("스토리 텍스트를 입력해주세요.")
@@ -369,13 +339,38 @@ if generate:
     elif not selected_types:
         st.error("질문 유형을 하나 이상 선택해주세요.")
     else:
-        with st.spinner("AI가 질문 풀을 생성하고 있습니다..."):
+        if uploaded_images:
+            alt_texts = {}
+            progress = st.progress(0, text="장면 Alt 텍스트 생성 중...")
+            try:
+                for i, img_file in enumerate(uploaded_images):
+                    scene_key = f"SC{i + 1:02d}"
+                    img_file.seek(0)
+                    image_bytes = img_file.read()
+                    mime_type = img_file.type or "image/jpeg"
+                    alt_texts[scene_key] = generate_alt_text(
+                        api_key, api_provider, image_bytes, mime_type, scene_key, story_text
+                    )
+                    progress.progress((i + 1) / len(uploaded_images), text=f"{scene_key} 완료")
+                st.session_state["alt_texts"] = alt_texts
+            except Exception as e:
+                st.error(f"Alt 생성 오류: {e}")
+            finally:
+                progress.empty()
+
+        with st.spinner("AI가 페르소나 및 질문 풀을 생성하고 있습니다..."):
             try:
                 prompt = build_prompt(story_text, patterns, keywords, story_words, selected_types)
                 raw = call_api(api_key, api_provider, prompt)
                 st.session_state["result"] = json.loads(raw)
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+
+# Alt 텍스트 결과 표시
+if "alt_texts" in st.session_state and st.session_state["alt_texts"]:
+    with st.expander("생성된 Alt 텍스트", expanded=False):
+        for scene_key, alt in sorted(st.session_state["alt_texts"].items()):
+            st.markdown(f"**{scene_key}** {alt}")
 
 if "result" in st.session_state:
     result = st.session_state["result"]
