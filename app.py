@@ -136,11 +136,12 @@ def call_api(api_key, api_provider, prompt):
 
 def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, story_text):
     prompt = (
-        f"This is {scene_key} from a children's English story.\n"
-        f"Story context: {story_text[:300]}\n\n"
-        "Write a concise 1-2 sentence alt text in English describing what is happening in this scene "
-        "— include the character's name if visible, their action, emotion, and key objects. "
-        "Return only the description with no prefix or label."
+        f"이것은 어린이 영어 스토리의 {scene_key} 장면입니다.\n"
+        f"스토리 맥락: {story_text[:300]}\n\n"
+        "이 장면에서 일어나고 있는 일을 한국어로 1-2문장으로 간결하게 묘사해주세요. "
+        "등장인물의 이름(보이는 경우), 행동, 감정, 주요 사물을 포함하세요. "
+        "예시: '테니스코트에서 라켓을 들고 초조해서 다리를 떨고 있는 Judy' "
+        "설명 외에 다른 내용은 출력하지 마세요."
     )
 
     if api_provider == "OpenAI":
