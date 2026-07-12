@@ -1,8 +1,10 @@
 import base64
+import io
 import json
 import streamlit as st
 import openai
 import google.generativeai as genai
+import pandas as pd
 
 SYSTEM_PROMPT = """You are an English learning content designer for children aged 9-11.
 Your job is to generate educational question pools based on a given story.
@@ -188,6 +190,27 @@ Valid JSON only. No markdown, no explanation outside JSON."""
     return json.loads(raw)
 
 
+def build_excel(result, alt_texts):
+    rows = []
+    for type_key, type_label in QUESTION_TYPES:
+        for q in result.get("questions", {}).get(type_key, []):
+            scene = q.get("relatedScene", "")
+            target_answer = q.get("targetAnswer") or " / ".join(q.get("targetAnswers", []))
+            rows.append({
+                "Type": type_label,
+                "Question": q.get("question", ""),
+                "Target Answer": target_answer,
+                "Related Scene": scene,
+                "Alt Text": alt_texts.get(scene, ""),
+                "Acceptable Criteria": q.get("acceptableCriteria", ""),
+            })
+    df = pd.DataFrame(rows, columns=["Type", "Question", "Target Answer", "Related Scene", "Alt Text", "Acceptable Criteria"])
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Questions")
+    return buf.getvalue()
+
+
 def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words, alt_texts):
     with st.container(border=True):
         col1, col2 = st.columns([0.05, 0.95])
@@ -370,12 +393,23 @@ if "result" in st.session_state:
         st.markdown(f"**Core Message** {persona.get('coreMessage', '')}")
         st.markdown(f"**Opening Line** *\"{persona.get('openingLine', '')}\"*")
 
-        st.download_button(
-            "전체 JSON 다운로드",
-            data=json.dumps(result, ensure_ascii=False, indent=2),
-            file_name="result.json",
-            mime="application/json",
-        )
+        dl_col1, dl_col2 = st.columns(2)
+        with dl_col1:
+            st.download_button(
+                "Excel 다운로드",
+                data=build_excel(result, alt_texts),
+                file_name="questions.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+            )
+        with dl_col2:
+            st.download_button(
+                "JSON 다운로드",
+                data=json.dumps(result, ensure_ascii=False, indent=2),
+                file_name="result.json",
+                mime="application/json",
+                use_container_width=True,
+            )
 
     # Question Tabs
     active_types = [(k, l) for k, l in QUESTION_TYPES if k in questions and k in selected_types]
