@@ -12,10 +12,10 @@ Always respond with valid JSON only. No markdown, no explanation outside JSON.""
 
 QUESTION_TYPES = [
     ("patternPractice", "Pattern Practice"),
-    ("recall", "Comprehension — Recall"),
-    ("inference", "Comprehension — Inference"),
-    ("transfer", "Extension — Transfer"),
-    ("reflection", "Extension — Reflection"),
+    ("recall", "Recall"),
+    ("inference", "Inference"),
+    ("transfer", "Transfer"),
+    ("reflection", "Reflection"),
 ]
 
 
