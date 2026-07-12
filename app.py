@@ -1,3 +1,4 @@
+import base64
 import json
 import streamlit as st
 import openai
@@ -133,6 +134,38 @@ def call_api(api_key, api_provider, prompt):
         return result.text
 
 
+def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, story_text):
+    prompt = (
+        f"This is {scene_key} from a children's English story.\n"
+        f"Story context: {story_text[:300]}\n\n"
+        "Write a concise 1-2 sentence alt text in English describing what is happening in this scene "
+        "— include the character's name if visible, their action, emotion, and key objects. "
+        "Return only the description with no prefix or label."
+    )
+
+    if api_provider == "OpenAI":
+        client = openai.OpenAI(api_key=api_key)
+        b64 = base64.b64encode(image_bytes).decode()
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{
+                "role": "user",
+                "content": [
+                    {"type": "image_url", "image_url": {"url": f"data:{mime_type};base64,{b64}"}},
+                    {"type": "text", "text": prompt},
+                ],
+            }],
+            max_tokens=200,
+        )
+        return response.choices[0].message.content.strip()
+    else:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        image_part = {"mime_type": mime_type, "data": image_bytes}
+        response = model.generate_content([image_part, prompt])
+        return response.text.strip()
+
+
 def regenerate_question(api_key, api_provider, story_text, keywords, story_words, question_type, original_q, instruction):
     type_label = dict(QUESTION_TYPES).get(question_type, question_type)
     prompt = f"""Story Text:
@@ -154,14 +187,20 @@ Valid JSON only. No markdown, no explanation outside JSON."""
     return json.loads(raw)
 
 
-def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words):
+def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words, alt_texts):
     with st.container(border=True):
         col1, col2 = st.columns([0.05, 0.95])
         with col1:
             st.markdown(f"**{idx + 1}**")
         with col2:
             st.markdown(f"**{q['question']}**")
-            st.caption(q.get("relatedScene", ""))
+
+            scene = q.get("relatedScene", "")
+            alt = alt_texts.get(scene, "")
+            if alt:
+                st.caption(f"{scene} · {alt}")
+            else:
+                st.caption(scene)
 
             if q.get("targetAnswer"):
                 st.markdown("**Target Answer**")
@@ -226,6 +265,16 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
+    st.subheader("장면 이미지 (Alt 텍스트 생성용)")
+    st.caption("업로드 순서가 SC01, SC02, ... 순으로 매핑됩니다.")
+    uploaded_images = st.file_uploader(
+        "이미지",
+        type=["png", "jpg", "jpeg", "webp"],
+        accept_multiple_files=True,
+        label_visibility="collapsed",
+    )
+    generate_alt = st.button("Alt 텍스트 생성", use_container_width=True, disabled=not uploaded_images)
+
     st.subheader("핵심 패턴 (Pattern Practice용)")
     patterns = st.text_area(
         "패턴",
@@ -258,7 +307,36 @@ with st.sidebar:
 
     generate = st.button("페르소나 및 질문 풀 생성", type="primary", use_container_width=True)
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# ── Alt 텍스트 생성 ───────────────────────────────────────────────────────────
+if generate_alt and uploaded_images:
+    if not api_key.strip():
+        st.error("API 키를 입력해주세요.")
+    else:
+        alt_texts = {}
+        progress = st.progress(0, text="Alt 텍스트 생성 중...")
+        try:
+            for i, img_file in enumerate(uploaded_images):
+                scene_key = f"SC{i + 1:02d}"
+                img_file.seek(0)
+                image_bytes = img_file.read()
+                mime_type = img_file.type or "image/jpeg"
+                alt_texts[scene_key] = generate_alt_text(
+                    api_key, api_provider, image_bytes, mime_type, scene_key, story_text
+                )
+                progress.progress((i + 1) / len(uploaded_images), text=f"{scene_key} 완료")
+            st.session_state["alt_texts"] = alt_texts
+        except Exception as e:
+            st.error(f"Alt 생성 오류: {e}")
+        finally:
+            progress.empty()
+
+# Alt 텍스트 결과 표시
+if "alt_texts" in st.session_state and st.session_state["alt_texts"]:
+    with st.expander("생성된 Alt 텍스트", expanded=False):
+        for scene_key, alt in sorted(st.session_state["alt_texts"].items()):
+            st.markdown(f"**{scene_key}** {alt}")
+
+# ── 질문 풀 생성 ──────────────────────────────────────────────────────────────
 if generate:
     if not story_text.strip():
         st.error("스토리 텍스트를 입력해주세요.")
@@ -279,6 +357,7 @@ if "result" in st.session_state:
     result = st.session_state["result"]
     persona = result.get("characterPersona", {})
     questions = result.get("questions", {})
+    alt_texts = st.session_state.get("alt_texts", {})
 
     # Character Persona
     with st.expander("Character Persona", expanded=True):
@@ -304,4 +383,7 @@ if "result" in st.session_state:
         for tab, (key, _) in zip(tabs, active_types):
             with tab:
                 for i, q in enumerate(questions.get(key, [])):
-                    render_question(q, i, key, api_key, api_provider, story_text, keywords, story_words)
+                    render_question(
+                        q, i, key, api_key, api_provider,
+                        story_text, keywords, story_words, alt_texts,
+                    )
