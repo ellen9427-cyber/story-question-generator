@@ -89,7 +89,7 @@ Return a JSON object with this exact structure:
 Rules:
 - Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
 - All questions within each type must be ordered by scene (SC01 before SC02, etc.), following the chronological flow of the story.
-- patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow.
+- patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow. The acceptableCriteria for each patternPractice question must follow this format: "발음을 명확하게 하지 않아도 '[해당 문장의 핵심 구조 또는 패턴]'를 포함해서 말하면 정답으로 인정한다." — replace the bracketed part with the specific grammatical structure or key phrase of that sentence (e.g., 'not + 형용사 구조', 'I used to + 동사 구조').
 - recall: questions must be answerable directly from the story text only. The acceptableCriteria for each recall question must specify the exact keyword(s) or key content that must appear in the answer — not a generic statement. Format: "'[keyword]'를 포함하여 말하면 정답으로 인정한다." or "[핵심 내용]이 드러나게 말하면 정답으로 인정한다." Include any important constraints (e.g., verb synonyms allowed, specific word variants accepted).
 - inference: questions require reading between the lines of the story. The acceptableCriteria for each inference question must specify the exact keyword(s) or key meaning that must appear in the answer — not a generic statement. Format: "'[keyword]' 또는 '[keyword]'를 포함하여 [핵심 의미]가 드러나면 정답으로 인정한다." Include semantic variants where appropriate (e.g., synonyms or paraphrases that convey the same meaning).
 - transfer: questions ask the learner about their own experience or opinion, linked to story themes. The acceptableCriteria for each transfer question must be specific to that question — not a generic statement. Specify the type of response that counts as correct: relevant keywords, emotional vocabulary, categories of examples (e.g., sports/activities/situations), or meaningful content the learner's answer must include. Format: "[keyword 또는 카테고리 예시]를 포함하거나 [핵심 의미]가 드러나면 정답으로 인정한다."
@@ -107,34 +107,54 @@ Rules:
 """
 
 
-def generate_with_openai(api_key, prompt):
-    client = openai.OpenAI(api_key=api_key)
-    completion = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ],
-        response_format={"type": "json_object"},
-        temperature=0.7,
-    )
-    return completion.choices[0].message.content
-
-
-def generate_with_gemini(api_key, prompt):
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash",
-        generation_config=genai.GenerationConfig(
-            response_mime_type="application/json",
+def call_api(api_key, api_provider, prompt):
+    if api_provider == "OpenAI":
+        client = openai.OpenAI(api_key=api_key)
+        completion = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+            response_format={"type": "json_object"},
             temperature=0.7,
-        ),
-    )
-    result = model.generate_content(f"{SYSTEM_PROMPT}\n\n{prompt}")
-    return result.text
+        )
+        return completion.choices[0].message.content
+    else:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel(
+            model_name="gemini-2.5-flash",
+            generation_config=genai.GenerationConfig(
+                response_mime_type="application/json",
+                temperature=0.7,
+            ),
+        )
+        result = model.generate_content(f"{SYSTEM_PROMPT}\n\n{prompt}")
+        return result.text
 
 
-def render_question(q, idx):
+def regenerate_question(api_key, api_provider, story_text, keywords, story_words, question_type, original_q, instruction):
+    type_label = dict(QUESTION_TYPES).get(question_type, question_type)
+    prompt = f"""Story Text:
+{story_text}
+
+Keywords (may be used in questions): {keywords}
+Story Words (must NOT be used in questions): {story_words}
+
+The following question was generated for the "{type_label}" category:
+{json.dumps(original_q, ensure_ascii=False, indent=2)}
+
+Refinement instruction: {instruction}
+
+Regenerate ONLY this single question following the instruction.
+Return a JSON object with exactly the same structure as the original.
+Valid JSON only. No markdown, no explanation outside JSON."""
+
+    raw = call_api(api_key, api_provider, prompt)
+    return json.loads(raw)
+
+
+def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words):
     with st.container(border=True):
         col1, col2 = st.columns([0.05, 0.95])
         with col1:
@@ -154,8 +174,36 @@ def render_question(q, idx):
             st.markdown("**채점 기준**")
             st.info(q.get("acceptableCriteria", ""))
 
+            col_input, col_btn = st.columns([0.82, 0.18])
+            with col_input:
+                instruction = st.text_input(
+                    "수정 요청",
+                    key=f"refine_{question_type}_{idx}",
+                    placeholder="예: 난이도를 낮춰줘 / 더 구체적인 상황을 넣어줘",
+                    label_visibility="collapsed",
+                )
+            with col_btn:
+                regenerate_clicked = st.button(
+                    "재생성", key=f"btn_{question_type}_{idx}", use_container_width=True
+                )
 
-# ── Page config ──────────────────────────────────────────────────────────────
+        if regenerate_clicked:
+            if not instruction.strip():
+                st.warning("수정 요청을 입력해주세요.")
+            else:
+                with st.spinner("재생성 중..."):
+                    try:
+                        new_q = regenerate_question(
+                            api_key, api_provider, story_text, keywords, story_words,
+                            question_type, q, instruction,
+                        )
+                        st.session_state["result"]["questions"][question_type][idx] = new_q
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"오류: {e}")
+
+
+# ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Story Question Generator", layout="wide")
 st.title("Story Question Generator")
 st.caption("스토리 텍스트와 패턴을 입력하면 질문 풀을 자동 생성합니다.")
@@ -222,11 +270,7 @@ if generate:
         with st.spinner("AI가 질문 풀을 생성하고 있습니다..."):
             try:
                 prompt = build_prompt(story_text, patterns, keywords, story_words, selected_types)
-                raw = (
-                    generate_with_openai(api_key, prompt)
-                    if api_provider == "OpenAI"
-                    else generate_with_gemini(api_key, prompt)
-                )
+                raw = call_api(api_key, api_provider, prompt)
                 st.session_state["result"] = json.loads(raw)
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
@@ -260,4 +304,4 @@ if "result" in st.session_state:
         for tab, (key, _) in zip(tabs, active_types):
             with tab:
                 for i, q in enumerate(questions.get(key, [])):
-                    render_question(q, i)
+                    render_question(q, i, key, api_key, api_provider, story_text, keywords, story_words)
