@@ -333,7 +333,7 @@ with st.sidebar:
     st.subheader("핵심 패턴 (Pattern Practice용)")
     patterns = st.text_area(
         "패턴",
-        placeholder="You're not worried anymore.\nYou're not weak anymore.\n...",
+        placeholder="not {adj} anymore",
         height=100,
         label_visibility="collapsed",
     )
