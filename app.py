@@ -58,25 +58,25 @@ Return a JSON object with this exact structure:
   "questions": {{
     "patternPractice": [
       {{
-        "question": "Say it with me: '[pattern sentence]'",
+        "question": "Say it with me: '[pattern sentence using You]'",
         "relatedScene": "SC##",
-        "targetAnswer": "exact sentence to repeat",
+        "targetAnswer": "exact sentence to repeat (subject: You)",
         "acceptableCriteria": "grading criterion in Korean"
       }}
     ],
     "recall": [
       {{
-        "question": "factual question about the story (from character's POV using 'I')",
+        "question": "factual question about the story (tutor asks from character's POV using 'I')",
         "relatedScene": "SC##",
-        "targetAnswers": ["answer variant 1", "answer variant 2"],
+        "targetAnswers": ["You + answer variant 1", "You + answer variant 2"],
         "acceptableCriteria": "grading criterion in Korean"
       }}
     ],
     "inference": [
       {{
-        "question": "inference question (from character's POV using 'I')",
+        "question": "inference question (tutor asks from character's POV using 'I')",
         "relatedScene": "SC##",
-        "targetAnswers": ["answer variant 1", "answer variant 2"],
+        "targetAnswers": ["You + answer variant 1", "You + answer variant 2"],
         "acceptableCriteria": "grading criterion in Korean"
       }}
     ],
@@ -111,7 +111,9 @@ Rules:
   * For questions asking what the learner learned or felt from the story: "Judy 이야기의 메시지와 연결하여 [핵심 주제: 예 - 자신감, 연습, 자기 힘] 등의 의미가 드러나면 정답으로 인정한다."
   * For advice-giving questions (What would you say to...?): "경기 결과와 상관없이 [노력/자신감/연습/자기 힘] 등을 인정하거나 격려하는 내용이면 정답으로 인정한다."
   Always specify (1) expected response format, (2) acceptable keywords or meanings, and (3) what makes an answer especially strong, if applicable.
-- Questions should be from the character's first-person perspective ("What sport did I love?").
+- Questions must be asked from the tutor's (character's) first-person perspective using "I" (e.g., "What sport did I love?").
+- All target answers must use "You" as the subject — the learner answers about the character (e.g., "You loved tennis." not "I loved tennis."). This applies to patternPractice targetAnswer, and all targetAnswers in recall, inference, transfer, and reflection.
+- For transfer and reflection, where the learner talks about themselves, answers may use "I" naturally (e.g., "I feel happy when I play soccer.").
 - VOCABULARY LEVEL CONSTRAINT: The book level is CEFR {cefr_level}. All vocabulary used in questions and target answers must not exceed CEFR {cefr_level}. Do not use any word more complex than CEFR {cefr_level}. This applies to every word in every question, answer, and the acceptableCriteria (Korean text in acceptableCriteria is exempt from CEFR rules).
 - Match the vocabulary and sentence complexity of the questions to the level of the story text. Do not use words or structures more advanced than those found in the story.
 - The tutor's question wording may include provided Keywords, but must NOT use Story Words. Replace story words with simpler or alternative vocabulary that conveys the same meaning.
