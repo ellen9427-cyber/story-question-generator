@@ -3,7 +3,8 @@ import io
 import json
 import streamlit as st
 import openai
-import google.generativeai as genai
+from google import genai
+from google.genai import types as genai_types
 import pandas as pd
 
 SYSTEM_PROMPT = """You are an English learning content designer for children aged 9-11.
@@ -134,16 +135,16 @@ def call_api(api_key, api_provider, prompt):
         )
         return completion.choices[0].message.content
     else:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
-            generation_config=genai.GenerationConfig(
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"{SYSTEM_PROMPT}\n\n{prompt}",
+            config=genai_types.GenerateContentConfig(
                 response_mime_type="application/json",
                 temperature=0.7,
             ),
         )
-        result = model.generate_content(f"{SYSTEM_PROMPT}\n\n{prompt}")
-        return result.text
+        return response.text
 
 
 def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, story_text):
@@ -172,10 +173,14 @@ def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, 
         )
         return response.choices[0].message.content.strip()
     else:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-flash")
-        image_part = {"mime_type": mime_type, "data": image_bytes}
-        response = model.generate_content([image_part, prompt])
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                genai_types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                prompt,
+            ],
+        )
         return response.text.strip()
 
 
