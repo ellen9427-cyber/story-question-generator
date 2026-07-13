@@ -82,12 +82,7 @@ Return a JSON object with this exact structure:
     "gender": "gender (derived from the story)",
     "personality": "personality description in English (derived from the story)",
     "coreMessage": "core message in English (derived from the story)",
-    "openingLine": [
-      "Step 1 — Greeting: a warm, friendly hello (e.g., Hello! / Hi there!)",
-      "Step 2 — Self-introduction: character states their name (e.g., My name is Judy.)",
-      "Step 3 — One-sentence theme or personal message that runs through the story (e.g., I am strong inside.)",
-      "Step 4 — A simple preference question with no right or wrong answer (e.g., What sport do you like?)"
-    ]
+    "openingLine": "a single continuous tutor script that naturally flows through: (1) a warm greeting, (2) the character's self-introduction by name, (3) one sentence capturing the story's core theme or personal message (e.g., I am strong inside.), and (4) a simple preference question with no right or wrong answer (e.g., What sport do you like?). Write it as natural connected speech, not as separate labeled parts."
   }},
   "questions": {{
     "patternPractice": [
@@ -137,7 +132,7 @@ Rules:
 - Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
 - All questions within each type must be ordered by scene (SC01 before SC02, etc.), following the chronological flow of the story.
 - patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow. Each question must follow the format: "Say it with me: 'I [pattern sentence]'" — the pattern sentence must use "I" as the subject (tutor speaking as the character). The targetAnswer must also start with "I" (the student repeats the sentence using "I"). The acceptableCriteria for each patternPractice question must follow this format: "발음을 명확하게 하지 않아도 '[해당 문장의 핵심 구조 또는 패턴]'를 포함해서 말하면 정답으로 인정한다." — replace the bracketed part with the specific grammatical structure or key phrase of that sentence (e.g., 'not + 형용사 구조', 'I used to + 동사 구조').
-- recall: questions must be answerable directly from the story text only. The acceptableCriteria for each recall question must specify the exact keyword(s) or key content that must appear in the answer — not a generic statement. Format: "'[keyword]'를 포함하여 말하면 정답으로 인정한다." or "[핵심 내용]이 드러나게 말하면 정답으로 인정한다." Include any important constraints (e.g., verb synonyms allowed, specific word variants accepted).
+- recall: questions must be answerable directly from the story text only, and must have a single, specific, unambiguous answer explicitly stated in the story. Do NOT generate questions where the answer would be vague or non-specific — for example, avoid questions about uncounted quantities (e.g., "How much gold?" → "much gold" is not an acceptable answer), or questions where the story only implies a general amount rather than a precise fact. Stick to questions whose answers are concrete: a specific name, place, action, object, or clearly stated fact. The acceptableCriteria for each recall question must specify the exact keyword(s) or key content that must appear in the answer — not a generic statement. Format: "'[keyword]'를 포함하여 말하면 정답으로 인정한다." or "[핵심 내용]이 드러나게 말하면 정답으로 인정한다." Include any important constraints (e.g., verb synonyms allowed, specific word variants accepted).
 - inference: questions require reading between the lines of the story. The acceptableCriteria for each inference question must specify the exact keyword(s) or key meaning that must appear in the answer — not a generic statement. Format: "'[keyword]' 또는 '[keyword]'를 포함하여 [핵심 의미]가 드러나면 정답으로 인정한다." Include semantic variants where appropriate (e.g., synonyms or paraphrases that convey the same meaning).
 - transfer: questions ask the learner about their own experience or opinion, linked to story themes. The acceptableCriteria for each transfer question must be specific to that question — not a generic statement. Specify the type of response that counts as correct: relevant keywords, emotional vocabulary, categories of examples (e.g., sports/activities/situations), or meaningful content the learner's answer must include. Format: "[keyword 또는 카테고리 예시]를 포함하거나 [핵심 의미]가 드러나면 정답으로 인정한다."
 - reflection: open-ended questions asking for evaluation or advice about story events. The acceptableCriteria for each reflection question must be specific to that question — not a generic statement. Follow these patterns based on question type:
@@ -155,8 +150,8 @@ Rules:
 - The tutor's question wording may include provided Keywords, but must NOT use Story Words. Replace story words with simpler or alternative vocabulary that conveys the same meaning.
 - Acceptable criteria must be written in Korean.
 - All questions and answers must be in English.
-- characterPersona fields (name, age, gender, personality, coreMessage) must ALL be written in English, derived from the story text.
-- The openingLine field must be an array of exactly 4 strings, one for each step described above.
+- characterPersona fields (name, age, gender, personality, coreMessage, openingLine) must ALL be written in English, derived from the story text.
+- The openingLine field must be a single string of continuous natural speech (not an array, not labeled sections).
 - age must be a single exact age (e.g., "10 years old"), not a range.
 """
 
@@ -461,15 +456,10 @@ if "result" in st.session_state:
         st.markdown(f"**Personality** {persona.get('personality', '')}")
         st.markdown(f"**Core Message** {persona.get('coreMessage', '')}")
 
-        opening = persona.get("openingLine", [])
-        st.markdown("**Opening Line**")
+        opening = persona.get("openingLine", "")
         if isinstance(opening, list):
-            labels = ["인사", "자기소개", "주제 한 마디", "선호도 질문"]
-            for i, line in enumerate(opening):
-                label = labels[i] if i < len(labels) else f"Step {i + 1}"
-                st.markdown(f"*{label}:* \"{line}\"")
-        else:
-            st.markdown(f"*\"{opening}\"*")
+            opening = " ".join(opening)
+        st.markdown(f"**Opening Line** *\"{opening}\"*")
 
         dl_col1, dl_col2 = st.columns(2)
         with dl_col1:
