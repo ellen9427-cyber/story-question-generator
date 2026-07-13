@@ -147,14 +147,21 @@ def call_api(api_key, api_provider, prompt):
         return response.text
 
 
-def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, story_text):
+ALT_TEXT_CEFR_CAP = {"A2": "A2", "B1": "B1", "B2": "B2", "C1": "B2"}
+
+
+def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, story_text, cefr_level="B1"):
+    effective_level = ALT_TEXT_CEFR_CAP.get(cefr_level, "B1")
     prompt = (
-        f"이것은 어린이 영어 스토리의 {scene_key} 장면입니다.\n"
-        f"스토리 맥락: {story_text[:300]}\n\n"
-        "이 장면에서 일어나고 있는 일을 한국어로 1-2문장으로 간결하게 묘사해주세요. "
-        "등장인물의 이름(보이는 경우), 행동, 감정, 주요 사물을 포함하세요. "
-        "예시: '테니스코트에서 라켓을 들고 초조해서 다리를 떨고 있는 Judy' "
-        "설명 외에 다른 내용은 출력하지 마세요."
+        f"This is scene {scene_key} from a children's English storybook.\n"
+        f"Story context: {story_text[:300]}\n\n"
+        f"Describe what is happening in this scene in 1 short English sentence. "
+        f"Include the character's name (if visible), action, emotion, and key objects. "
+        f"Use only simple vocabulary at or below CEFR {effective_level} level — "
+        f"prefer words already used in the story context above. "
+        f"Never use C1-level words. "
+        f"Example format: 'Judy standing on a tennis court, holding a racket and looking nervous.' "
+        f"Output the description only. No extra text."
     )
 
     if api_provider == "OpenAI":
@@ -374,7 +381,7 @@ if generate:
                     image_bytes = img_file.read()
                     mime_type = img_file.type or "image/jpeg"
                     alt_texts[scene_key] = generate_alt_text(
-                        api_key, api_provider, image_bytes, mime_type, scene_key, story_text
+                        api_key, api_provider, image_bytes, mime_type, scene_key, story_text, cefr_level
                     )
                     progress.progress((i + 1) / len(uploaded_images), text=f"{scene_key} 완료")
                 st.session_state["alt_texts"] = alt_texts
