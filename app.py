@@ -340,7 +340,7 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    st.subheader("키워드 (질문에 사용 가능)")
+    st.subheader("키워드")
     keywords = st.text_area(
         "키워드",
         placeholder="tennis, racket, practice, confidence, ...",
@@ -348,7 +348,7 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    st.subheader("Story Words (질문에 사용 금지)")
+    st.subheader("Story Words")
     story_words = st.text_area(
         "스토리 단어",
         placeholder="whispers, shimmering, silver, ...",
