@@ -18,9 +18,18 @@ QUESTION_TYPES = [
     ("reflection", "Reflection"),
 ]
 
+BOOK_LEVEL_MAP = {
+    "Lv 1": "A2",
+    "Lv 2": "B1",
+    "Lv 3": "B2",
+    "Lv 4": "C1",
+}
 
-def build_prompt(story_text, patterns, keywords, story_words, selected_types):
+
+def build_prompt(story_text, patterns, keywords, story_words, selected_types, cefr_level="B1"):
     return f"""
+Book Level: {cefr_level} (maximum CEFR vocabulary level allowed)
+
 Story Text:
 {story_text}
 
@@ -102,6 +111,7 @@ Rules:
   * For advice-giving questions (What would you say to...?): "경기 결과와 상관없이 [노력/자신감/연습/자기 힘] 등을 인정하거나 격려하는 내용이면 정답으로 인정한다."
   Always specify (1) expected response format, (2) acceptable keywords or meanings, and (3) what makes an answer especially strong, if applicable.
 - Questions should be from the character's first-person perspective ("What sport did I love?").
+- VOCABULARY LEVEL CONSTRAINT: The book level is CEFR {cefr_level}. All vocabulary used in questions and target answers must not exceed CEFR {cefr_level}. Do not use any word more complex than CEFR {cefr_level}. This applies to every word in every question, answer, and the acceptableCriteria (Korean text in acceptableCriteria is exempt from CEFR rules).
 - Match the vocabulary and sentence complexity of the questions to the level of the story text. Do not use words or structures more advanced than those found in the story.
 - The tutor's question wording may include provided Keywords, but must NOT use Story Words. Replace story words with simpler or alternative vocabulary that conveys the same meaning.
 - Acceptable criteria must be written in Korean.
@@ -169,11 +179,12 @@ def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, 
         return response.text.strip()
 
 
-def regenerate_question(api_key, api_provider, story_text, keywords, story_words, question_type, original_q, instruction):
+def regenerate_question(api_key, api_provider, story_text, keywords, story_words, question_type, original_q, instruction, cefr_level="B1"):
     type_label = dict(QUESTION_TYPES).get(question_type, question_type)
     prompt = f"""Story Text:
 {story_text}
 
+Book Level: CEFR {cefr_level} — all vocabulary in questions and answers must not exceed this level.
 Keywords (may be used in questions): {keywords}
 Story Words (must NOT be used in questions): {story_words}
 
@@ -211,7 +222,7 @@ def build_excel(result, alt_texts):
     return buf.getvalue()
 
 
-def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words, alt_texts):
+def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words, alt_texts, cefr_level="B1"):
     with st.container(border=True):
         col1, col2 = st.columns([0.05, 0.95])
         with col1:
@@ -258,7 +269,7 @@ def render_question(q, idx, question_type, api_key, api_provider, story_text, ke
                     try:
                         new_q = regenerate_question(
                             api_key, api_provider, story_text, keywords, story_words,
-                            question_type, q, instruction,
+                            question_type, q, instruction, cefr_level,
                         )
                         st.session_state["result"]["questions"][question_type][idx] = new_q
                         st.rerun()
@@ -273,6 +284,15 @@ st.caption("스토리 텍스트와 패턴을 입력하면 질문 풀을 자동 �
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
+    st.subheader("도서 레벨")
+    book_level = st.selectbox(
+        "도서 레벨",
+        options=list(BOOK_LEVEL_MAP.keys()),
+        format_func=lambda lv: f"{lv} (CEFR {BOOK_LEVEL_MAP[lv]})",
+        label_visibility="collapsed",
+    )
+    cefr_level = BOOK_LEVEL_MAP[book_level]
+
     st.subheader("API 설정")
     api_provider = st.radio("Provider", ["OpenAI", "Gemini"], horizontal=True)
     api_key = st.text_input(
@@ -360,7 +380,7 @@ if generate:
 
         with st.spinner("AI가 페르소나 및 질문 풀을 생성하고 있습니다..."):
             try:
-                prompt = build_prompt(story_text, patterns, keywords, story_words, selected_types)
+                prompt = build_prompt(story_text, patterns, keywords, story_words, selected_types, cefr_level)
                 raw = call_api(api_key, api_provider, prompt)
                 st.session_state["result"] = json.loads(raw)
             except Exception as e:
@@ -415,5 +435,5 @@ if "result" in st.session_state:
                 for i, q in enumerate(questions.get(key, [])):
                     render_question(
                         q, i, key, api_key, api_provider,
-                        story_text, keywords, story_words, alt_texts,
+                        story_text, keywords, story_words, alt_texts, cefr_level,
                     )
