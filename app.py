@@ -7,7 +7,7 @@ from google import genai
 from google.genai import types as genai_types
 import pandas as pd
 
-SYSTEM_PROMPT = """You are an English learning content designer for children aged 9-11.
+SYSTEM_PROMPT = """You are an English learning content designer for children.
 Your job is to generate educational question pools based on a given story.
 Always respond with valid JSON only. No markdown, no explanation outside JSON."""
 
@@ -20,16 +20,45 @@ QUESTION_TYPES = [
 ]
 
 BOOK_LEVEL_MAP = {
-    "Lv 1": "A2",
-    "Lv 2": "B1",
-    "Lv 3": "B2",
-    "Lv 4": "C1",
+    "Lv 1": "Pre-A1",
+    "Lv 2": "A1",
+    "Lv 3": "A2",
+    "Lv 4": "B1",
+}
+
+CEFR_SENTENCE_STRUCTURE = {
+    "Pre-A1": (
+        "Use only words, phrases, or 2–3 word expressions. "
+        "Allowed structures: noun phrases, adjective+noun, basic verbs, some be-verb forms. "
+        "No complex sentences. Keep everything as short and simple as possible."
+    ),
+    "A1": (
+        "Use short, simple sentences (SVO structure). "
+        "Allowed structures: present tense, be verbs, can, there is/are, imperatives, basic question forms (Do/Does/Is/Are). "
+        "Avoid past tense, conjunctions, or any complex grammar."
+    ),
+    "A2": (
+        "Use simple sentences and begin introducing basic compound sentences. "
+        "Allowed structures: past tense (simple), be going to (future), because, and, but, when, basic if-clauses. "
+        "Avoid relative clauses, present perfect, or advanced grammar."
+    ),
+    "B1": (
+        "Use compound and complex sentences. "
+        "Allowed structures: relative clauses (who/which/that), present perfect, basic passives, first conditionals, "
+        "a variety of conjunctions (although, unless, while). "
+        "Avoid second conditionals, past perfect, or C1+ structures."
+    ),
 }
 
 
 def build_prompt(story_text, patterns, keywords, story_words, selected_types, cefr_level="B1"):
+    sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     return f"""
 Book Level: {cefr_level} (maximum CEFR vocabulary level allowed)
+
+CEFR {cefr_level} Sentence Structure Guide:
+{sentence_structure_guide}
+Apply this sentence structure to ALL questions and target answers.
 
 Story Text:
 {story_text}
@@ -49,18 +78,23 @@ Return a JSON object with this exact structure:
 {{
   "characterPersona": {{
     "name": "character name (derived from the story)",
-    "age": "age range (derived from the story)",
+    "age": "exact age as a single number derived from the story (e.g., \\"10 years old\\" or \\"11 years old\\")",
     "gender": "gender (derived from the story)",
     "personality": "personality description in English (derived from the story)",
     "coreMessage": "core message in English (derived from the story)",
-    "openingLine": "opening line in English (derived from the story)"
+    "openingLine": [
+      "Step 1 — Greeting: a warm, friendly hello (e.g., Hello! / Hi there!)",
+      "Step 2 — Self-introduction: character states their name (e.g., My name is Judy.)",
+      "Step 3 — One-sentence theme or personal message that runs through the story (e.g., I am strong inside.)",
+      "Step 4 — A simple preference question with no right or wrong answer (e.g., What sport do you like?)"
+    ]
   }},
   "questions": {{
     "patternPractice": [
       {{
-        "question": "Say it with me: '[pattern sentence using You]'",
+        "question": "Say it with me: 'I [pattern sentence]'",
         "relatedScene": "SC##",
-        "targetAnswer": "exact sentence to repeat (subject: You)",
+        "targetAnswer": "exact sentence starting with I for the student to repeat (e.g., I am not scared anymore.)",
         "acceptableCriteria": "grading criterion in Korean"
       }}
     ],
@@ -102,7 +136,7 @@ Return a JSON object with this exact structure:
 Rules:
 - Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
 - All questions within each type must be ordered by scene (SC01 before SC02, etc.), following the chronological flow of the story.
-- patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow. The acceptableCriteria for each patternPractice question must follow this format: "발음을 명확하게 하지 않아도 '[해당 문장의 핵심 구조 또는 패턴]'를 포함해서 말하면 정답으로 인정한다." — replace the bracketed part with the specific grammatical structure or key phrase of that sentence (e.g., 'not + 형용사 구조', 'I used to + 동사 구조').
+- patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow. Each question must follow the format: "Say it with me: 'I [pattern sentence]'" — the pattern sentence must use "I" as the subject (tutor speaking as the character). The targetAnswer must also start with "I" (the student repeats the sentence using "I"). The acceptableCriteria for each patternPractice question must follow this format: "발음을 명확하게 하지 않아도 '[해당 문장의 핵심 구조 또는 패턴]'를 포함해서 말하면 정답으로 인정한다." — replace the bracketed part with the specific grammatical structure or key phrase of that sentence (e.g., 'not + 형용사 구조', 'I used to + 동사 구조').
 - recall: questions must be answerable directly from the story text only. The acceptableCriteria for each recall question must specify the exact keyword(s) or key content that must appear in the answer — not a generic statement. Format: "'[keyword]'를 포함하여 말하면 정답으로 인정한다." or "[핵심 내용]이 드러나게 말하면 정답으로 인정한다." Include any important constraints (e.g., verb synonyms allowed, specific word variants accepted).
 - inference: questions require reading between the lines of the story. The acceptableCriteria for each inference question must specify the exact keyword(s) or key meaning that must appear in the answer — not a generic statement. Format: "'[keyword]' 또는 '[keyword]'를 포함하여 [핵심 의미]가 드러나면 정답으로 인정한다." Include semantic variants where appropriate (e.g., synonyms or paraphrases that convey the same meaning).
 - transfer: questions ask the learner about their own experience or opinion, linked to story themes. The acceptableCriteria for each transfer question must be specific to that question — not a generic statement. Specify the type of response that counts as correct: relevant keywords, emotional vocabulary, categories of examples (e.g., sports/activities/situations), or meaningful content the learner's answer must include. Format: "[keyword 또는 카테고리 예시]를 포함하거나 [핵심 의미]가 드러나면 정답으로 인정한다."
@@ -112,14 +146,18 @@ Rules:
   * For advice-giving questions (What would you say to...?): "경기 결과와 상관없이 [노력/자신감/연습/자기 힘] 등을 인정하거나 격려하는 내용이면 정답으로 인정한다."
   Always specify (1) expected response format, (2) acceptable keywords or meanings, and (3) what makes an answer especially strong, if applicable.
 - Questions must be asked from the tutor's (character's) first-person perspective using "I" (e.g., "What sport did I love?").
-- All target answers must use "You" as the subject — the learner answers about the character (e.g., "You loved tennis." not "I loved tennis."). This applies to patternPractice targetAnswer, and all targetAnswers in recall, inference, transfer, and reflection.
+- patternPractice targetAnswer must use "I" as the subject (student repeats the pattern sentence as the character).
+- For recall and inference, all targetAnswers must use "You" as the subject — the learner answers about the character (e.g., "You loved tennis." not "I loved tennis.").
 - For transfer and reflection, where the learner talks about themselves, answers may use "I" naturally (e.g., "I feel happy when I play soccer.").
 - VOCABULARY LEVEL CONSTRAINT: The book level is CEFR {cefr_level}. All vocabulary used in questions and target answers must not exceed CEFR {cefr_level}. Do not use any word more complex than CEFR {cefr_level}. This applies to every word in every question, answer, and the acceptableCriteria (Korean text in acceptableCriteria is exempt from CEFR rules).
+- SENTENCE STRUCTURE CONSTRAINT: Apply the CEFR {cefr_level} sentence structure guide above to all questions and target answers. Do not use grammar or sentence patterns more complex than what is specified for this level.
 - Match the vocabulary and sentence complexity of the questions to the level of the story text. Do not use words or structures more advanced than those found in the story.
 - The tutor's question wording may include provided Keywords, but must NOT use Story Words. Replace story words with simpler or alternative vocabulary that conveys the same meaning.
 - Acceptable criteria must be written in Korean.
 - All questions and answers must be in English.
-- characterPersona fields (name, age, gender, personality, coreMessage, openingLine) must ALL be written in English, derived from the story text.
+- characterPersona fields (name, age, gender, personality, coreMessage) must ALL be written in English, derived from the story text.
+- The openingLine field must be an array of exactly 4 strings, one for each step described above.
+- age must be a single exact age (e.g., "10 years old"), not a range.
 """
 
 
@@ -149,11 +187,11 @@ def call_api(api_key, api_provider, prompt):
         return response.text
 
 
-ALT_TEXT_CEFR_CAP = {"A2": "A2", "B1": "B1", "B2": "B2", "C1": "B2"}
+ALT_TEXT_CEFR_CAP = {"Pre-A1": "A1", "A1": "A1", "A2": "A2", "B1": "A2"}
 
 
 def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, story_text, cefr_level="B1"):
-    effective_level = ALT_TEXT_CEFR_CAP.get(cefr_level, "B1")
+    effective_level = ALT_TEXT_CEFR_CAP.get(cefr_level, "A2")
     prompt = (
         f"This is scene {scene_key} from a children's English storybook.\n"
         f"Story context: {story_text[:300]}\n\n"
@@ -195,10 +233,12 @@ def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, 
 
 def regenerate_question(api_key, api_provider, story_text, keywords, story_words, question_type, original_q, instruction, cefr_level="B1"):
     type_label = dict(QUESTION_TYPES).get(question_type, question_type)
+    sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     prompt = f"""Story Text:
 {story_text}
 
 Book Level: CEFR {cefr_level} — all vocabulary in questions and answers must not exceed this level.
+CEFR {cefr_level} Sentence Structure Guide: {sentence_structure_guide}
 Keywords (may be used in questions): {keywords}
 Story Words (must NOT be used in questions): {story_words}
 
@@ -420,7 +460,16 @@ if "result" in st.session_state:
         c3.metric("Gender", persona.get("gender", "-"))
         st.markdown(f"**Personality** {persona.get('personality', '')}")
         st.markdown(f"**Core Message** {persona.get('coreMessage', '')}")
-        st.markdown(f"**Opening Line** *\"{persona.get('openingLine', '')}\"*")
+
+        opening = persona.get("openingLine", [])
+        st.markdown("**Opening Line**")
+        if isinstance(opening, list):
+            labels = ["인사", "자기소개", "주제 한 마디", "선호도 질문"]
+            for i, line in enumerate(opening):
+                label = labels[i] if i < len(labels) else f"Step {i + 1}"
+                st.markdown(f"*{label}:* \"{line}\"")
+        else:
+            st.markdown(f"*\"{opening}\"*")
 
         dl_col1, dl_col2 = st.columns(2)
         with dl_col1:
