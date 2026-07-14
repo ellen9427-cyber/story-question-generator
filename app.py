@@ -43,10 +43,11 @@ Requirements
 Always respond with valid JSON only. No markdown, no explanation outside JSON."""
 
 SCENE_ANALYSIS_SYSTEM_PROMPT = """You are a children's story analyst for English education.
-Analyze story texts and extract structured scene-by-scene information.
+Analyze story texts and extract structured story information.
 Always respond with valid JSON only. No markdown, no explanation outside JSON."""
 
 QUESTION_TYPES = [
+    ("patternPractice", "Pattern Practice"),
     ("recall", "Recall"),
     ("inference", "Inference"),
     ("transfer", "Transfer"),
@@ -85,31 +86,25 @@ CEFR_SENTENCE_STRUCTURE = {
 }
 
 
-def analyze_scenes(api_key, api_provider, story_text):
-    prompt = f"""Analyze the following children's story and extract structured information for each scene.
+def analyze_story(api_key, api_provider, story_text):
+    prompt = f"""Analyze the following children's story.
 
 Story Text:
 {story_text}
 
 Return a JSON object with this exact structure:
 {{
-  "scenes": [
-    {{
-      "scene": "SC01",
-      "event": "What physically happens in this scene (1–2 sentences)",
-      "trigger": "What causes or leads up to this event (1–2 sentences)",
-      "result": "The outcome or consequence of this scene (1–2 sentences)",
-      "emotional_response": "How the main character feels or reacts (1–2 sentences)",
-      "include": true
-    }}
-  ]
+  "summary": "Summarize the story in exactly 3 sentences.",
+  "storyElements": {{
+    "characters": "main characters and their roles",
+    "setting": "when and where the story takes place",
+    "conflict": "the main problem or challenge",
+    "resolution": "how the conflict is resolved",
+    "moral": "the lesson or theme"
+  }}
 }}
 
-Rules:
-- Detect every scene marker (SC01, SC02, ...) present in the story text, in order.
-- Write all field values in English.
-- Set "include" to true for all scenes by default.
-- Return valid JSON only."""
+Return valid JSON only."""
 
     if api_provider == "OpenAI":
         client = openai.OpenAI(api_key=api_key)
@@ -122,7 +117,7 @@ Rules:
             response_format={"type": "json_object"},
             temperature=0.3,
         )
-        return json.loads(completion.choices[0].message.content)["scenes"]
+        return json.loads(completion.choices[0].message.content)
     else:
         client = genai.Client(api_key=api_key)
         response = client.models.generate_content(
@@ -133,54 +128,51 @@ Rules:
                 temperature=0.3,
             ),
         )
-        data = json.loads(response.text)
-        return data["scenes"] if isinstance(data, dict) and "scenes" in data else data
+        return json.loads(response.text)
 
 
-def build_prompt(scene_summaries, keywords, story_words, selected_types, cefr_level="B1"):
+def build_prompt(story_text, story_analysis, user_patterns, keywords, story_words, selected_types, cefr_level="B1"):
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
+    summary = story_analysis.get("summary", "")
+    elements = story_analysis.get("storyElements", {})
+    story_context = f"""Summary: {summary}
+Characters: {elements.get("characters", "")}
+Setting: {elements.get("setting", "")}
+Conflict: {elements.get("conflict", "")}
+Resolution: {elements.get("resolution", "")}
+Moral: {elements.get("moral", "")}"""
+
     return f"""
 Book Level: CEFR {cefr_level}
 Sentence Structure Guide: {sentence_structure_guide}
 
-Scene-by-Scene Story Summary:
-{scene_summaries}
+Story Text:
+{story_text}
+
+Story Analysis:
+{story_context}
+
+Core Patterns for Pattern Practice (provided by user):
+{user_patterns}
 
 Keywords (may appear in questions): {keywords}
 Story Words (must NOT be used in questions — replace with simpler vocabulary): {story_words}
 
-Follow these steps exactly.
+Generate the following:
 
-Step 1.
-Summarize the story in 3 sentences.
+Step 1: Core Message and Opening Line
+- Core Message: one sentence capturing the story's central lesson
+- Opening Line: a single continuous tutor script that flows naturally: warm greeting → character's name → one-sentence theme → simple preference question with no right or wrong answer. Write as natural connected speech.
 
-Step 2.
-Identify:
-- characters
-- setting
-- conflict
-- resolution
-- moral
+Step 2: Key Language Patterns
+Generate 3–5 key language patterns from the story. Each as a short label with one example sentence.
 
-Step 3.
-Generate:
-- Core Message (one sentence capturing the story's central lesson)
-- Opening Line (a single continuous tutor script: warm greeting → character's name → one-sentence theme → simple preference question with no right answer. Write as natural connected speech.)
-- Patterns (3–5 key language patterns from the story, each as a short label with one example sentence)
-- 5 questions for each selected type: {", ".join(selected_types)}
-
+Step 3: Questions
+Generate 5 questions for each selected type: {", ".join(selected_types)}
 Do not repeat ideas across questions or types.
 
 Return a JSON object with this exact structure:
 {{
-  "summary": "3-sentence story summary",
-  "storyElements": {{
-    "characters": "main characters and their roles",
-    "setting": "when and where the story takes place",
-    "conflict": "the main problem or challenge",
-    "resolution": "how the conflict is resolved",
-    "moral": "the lesson or theme"
-  }},
   "characterPersona": {{
     "name": "character name",
     "age": "exact age derived from the story (e.g., \\"10 years old\\")",
@@ -190,10 +182,18 @@ Return a JSON object with this exact structure:
     "openingLine": "single continuous tutor script as described above"
   }},
   "patterns": [
-    "Pattern label — Example: example sentence from the story context.",
-    "Pattern label — Example: example sentence from the story context."
+    "Pattern label — Example: example sentence.",
+    "Pattern label — Example: example sentence."
   ],
   "questions": {{
+    "patternPractice": [
+      {{
+        "question": "Say it with me: 'I [pattern sentence]'",
+        "relatedScene": "SC##",
+        "targetAnswer": "I [pattern sentence]",
+        "acceptableCriteria": "채점 기준 (Korean)"
+      }}
+    ],
     "recall": [
       {{
         "question": "WH question about an explicitly stated fact",
@@ -232,11 +232,11 @@ Return a JSON object with this exact structure:
 Rules:
 - Generate exactly 5 questions per selected type (omit unselected types entirely).
 - Order questions within each type chronologically by scene.
-- Only reference scenes listed in the Scene-by-Scene Story Summary.
-- recall: answers must be explicitly stated in the story. Avoid vague quantity answers (e.g., "much gold"). Stick to concrete facts: names, places, actions, objects. acceptableCriteria must name the exact required keyword(s).
-- inference: ask a single direct question only — no setup sentences before it. The answer must be derivable from story clues, not speculation. acceptableCriteria must name the exact keyword(s) or meaning required.
+- patternPractice: base sentences on the user-provided Core Patterns above. Each question: "Say it with me: 'I [pattern sentence]'". targetAnswer must start with "I". acceptableCriteria format: "발음을 명확하게 하지 않아도 '[핵심 구조]'를 포함해서 말하면 정답으로 인정한다."
+- recall: answers must be explicitly stated in the story. Avoid vague quantity answers. Stick to concrete facts: names, places, actions, objects. acceptableCriteria must name the exact required keyword(s).
+- inference: single direct question only — no setup sentences before it. Answer must be derivable from story clues, not speculation. acceptableCriteria must name exact keyword(s) or meaning required.
 - transfer: link to story themes; accept any relevant personal answer. acceptableCriteria must specify what type of content counts as correct.
-- reflection: ask for evaluation or judgment. acceptableCriteria must specify expected format (Yes/No + reason, or open explanation) and key meanings that make a strong answer.
+- reflection: ask for evaluation or judgment. acceptableCriteria must specify expected format and key meanings that make a strong answer.
 - VOCABULARY: Do not exceed CEFR {cefr_level} in any question or answer. Apply the sentence structure guide above.
 - All questions and answers must be in English. acceptableCriteria must be in Korean.
 - age must be a single exact number (e.g., "10 years old"), not a range.
@@ -314,11 +314,11 @@ def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, 
         return response.text.strip()
 
 
-def regenerate_question(api_key, api_provider, scene_summaries, keywords, story_words, question_type, original_q, instruction, cefr_level="B1"):
+def regenerate_question(api_key, api_provider, story_text, keywords, story_words, question_type, original_q, instruction, cefr_level="B1"):
     type_label = dict(QUESTION_TYPES).get(question_type, question_type)
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
-    prompt = f"""Scene-by-Scene Story Summary:
-{scene_summaries}
+    prompt = f"""Story Text:
+{story_text}
 
 Book Level: CEFR {cefr_level} — vocabulary must not exceed this level.
 Sentence Structure Guide: {sentence_structure_guide}
@@ -338,7 +338,7 @@ Valid JSON only. No markdown, no explanation outside JSON."""
     return json.loads(raw)
 
 
-def build_excel(result, alt_texts):
+def build_excel(result, story_analysis, alt_texts):
     # Questions sheet
     rows = []
     for type_key, type_label in QUESTION_TYPES:
@@ -357,12 +357,12 @@ def build_excel(result, alt_texts):
 
     # Story Info sheet
     persona = result.get("characterPersona", {})
-    elements = result.get("storyElements", {})
+    elements = story_analysis.get("storyElements", {})
     opening = persona.get("openingLine", "")
     if isinstance(opening, list):
         opening = " ".join(opening)
     info_rows = [
-        {"Field": "Summary", "Value": result.get("summary", "")},
+        {"Field": "Summary", "Value": story_analysis.get("summary", "")},
         {"Field": "Characters", "Value": elements.get("characters", "")},
         {"Field": "Setting", "Value": elements.get("setting", "")},
         {"Field": "Conflict", "Value": elements.get("conflict", "")},
@@ -374,8 +374,7 @@ def build_excel(result, alt_texts):
     df_info = pd.DataFrame(info_rows)
 
     # Patterns sheet
-    patterns = result.get("patterns", [])
-    df_patterns = pd.DataFrame({"Pattern": patterns})
+    df_patterns = pd.DataFrame({"Pattern": result.get("patterns", [])})
 
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
@@ -385,7 +384,7 @@ def build_excel(result, alt_texts):
     return buf.getvalue()
 
 
-def render_question(q, idx, question_type, api_key, api_provider, scene_summaries, keywords, story_words, alt_texts, cefr_level="B1"):
+def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words, alt_texts, cefr_level="B1"):
     with st.container(border=True):
         col1, col2 = st.columns([0.05, 0.95])
         with col1:
@@ -431,7 +430,7 @@ def render_question(q, idx, question_type, api_key, api_provider, scene_summarie
                 with st.spinner("재생성 중..."):
                     try:
                         new_q = regenerate_question(
-                            api_key, api_provider, scene_summaries, keywords, story_words,
+                            api_key, api_provider, story_text, keywords, story_words,
                             question_type, q, instruction, cefr_level,
                         )
                         st.session_state["result"]["questions"][question_type][idx] = new_q
@@ -443,7 +442,7 @@ def render_question(q, idx, question_type, api_key, api_provider, scene_summarie
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Story Question Generator", layout="wide")
 st.title("Story Question Generator")
-st.caption("스토리 텍스트를 입력하고, 씬을 검수한 뒤 질문을 생성하세요.")
+st.caption("스토리를 분석하고 페르소나와 질문을 생성합니다.")
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -481,6 +480,14 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
+    st.subheader("핵심 패턴 (Pattern Practice용)")
+    user_patterns = st.text_area(
+        "패턴",
+        placeholder="not {adj} anymore",
+        height=100,
+        label_visibility="collapsed",
+    )
+
     st.subheader("키워드")
     keywords = st.text_area(
         "키워드",
@@ -504,16 +511,15 @@ with st.sidebar:
             selected_types.append(key)
 
     st.divider()
-    analyze_clicked = st.button("① 씬 분석하기", type="primary", use_container_width=True)
+    analyze_clicked = st.button("① 스토리 분석하기", type="primary", use_container_width=True)
 
-# ── ① 씬 분석 ─────────────────────────────────────────────────────────────────
+# ── ① 스토리 분석 ─────────────────────────────────────────────────────────────
 if analyze_clicked:
     if not story_text.strip():
         st.error("스토리 텍스트를 입력해주세요.")
     elif not api_key.strip():
         st.error("API 키를 입력해주세요.")
     else:
-        # Alt 텍스트 생성 (이미지 업로드된 경우)
         if uploaded_images:
             alt_texts_new = {}
             progress = st.progress(0, text="장면 Alt 텍스트 생성 중...")
@@ -533,86 +539,23 @@ if analyze_clicked:
             finally:
                 progress.empty()
 
-        with st.spinner("씬을 분석하고 있습니다..."):
+        with st.spinner("스토리를 분석하고 있습니다..."):
             try:
-                scenes = analyze_scenes(api_key, api_provider, story_text)
-                st.session_state["scene_analysis"] = scenes
+                analysis = analyze_story(api_key, api_provider, story_text)
+                st.session_state["story_analysis"] = analysis
+                st.session_state["story_text_saved"] = story_text
                 st.session_state.pop("result", None)
             except Exception as e:
-                st.error(f"씬 분석 오류: {e}")
+                st.error(f"분석 오류: {e}")
 
-# ── 씬 분석 결과 표시 + ② 질문 생성 ──────────────────────────────────────────
-if "scene_analysis" in st.session_state:
-    st.subheader("① 씬 분석 결과")
-    st.caption("셀을 클릭해 내용을 수정하거나, '포함' 체크박스로 질문 생성 대상 씬을 선택하세요.")
+# ── Story Analysis 표시 + ② 페르소나 및 질문 생성 ─────────────────────────────
+if "story_analysis" in st.session_state:
+    analysis = st.session_state["story_analysis"]
+    elements = analysis.get("storyElements", {})
 
-    df = pd.DataFrame(st.session_state["scene_analysis"])
-    for col in ["event", "trigger", "result", "emotional_response"]:
-        if col not in df.columns:
-            df[col] = ""
-    if "include" not in df.columns:
-        df["include"] = True
-
-    edited_df = st.data_editor(
-        df[["scene", "event", "trigger", "result", "emotional_response", "include"]],
-        column_config={
-            "scene": st.column_config.TextColumn("씬", disabled=True, width="small"),
-            "event": st.column_config.TextColumn("사건", width="large"),
-            "trigger": st.column_config.TextColumn("계기", width="large"),
-            "result": st.column_config.TextColumn("결과", width="large"),
-            "emotional_response": st.column_config.TextColumn("심리반응", width="large"),
-            "include": st.column_config.CheckboxColumn("포함", width="small", default=True),
-        },
-        use_container_width=True,
-        hide_index=True,
-        num_rows="fixed",
-        key="scene_editor",
-    )
-
-    st.divider()
-
-    generate_clicked = st.button("② 질문 생성하기", type="primary")
-
-    if generate_clicked:
-        if not selected_types:
-            st.error("질문 유형을 하나 이상 선택해주세요.")
-        else:
-            included = edited_df[edited_df["include"] == True]
-            if included.empty:
-                st.error("포함할 씬을 하나 이상 선택해주세요.")
-            else:
-                scene_summaries = "\n".join([
-                    f"{row['scene']}: 사건: {row['event']} | 계기: {row['trigger']} | 결과: {row['result']} | 심리반응: {row['emotional_response']}"
-                    for _, row in included.iterrows()
-                ])
-
-                with st.spinner("AI가 페르소나 및 질문 풀을 생성하고 있습니다..."):
-                    try:
-                        prompt = build_prompt(scene_summaries, keywords, story_words, selected_types, cefr_level)
-                        raw = call_api(api_key, api_provider, prompt)
-                        st.session_state["result"] = json.loads(raw)
-                        st.session_state["scene_summaries"] = scene_summaries
-                    except Exception as e:
-                        st.error(f"오류가 발생했습니다: {e}")
-
-# ── Alt 텍스트 미리보기 ────────────────────────────────────────────────────────
-if "alt_texts" in st.session_state and st.session_state["alt_texts"]:
-    with st.expander("생성된 Alt 텍스트", expanded=False):
-        for scene_key, alt in sorted(st.session_state["alt_texts"].items()):
-            st.markdown(f"**{scene_key}** {alt}")
-
-# ── 결과 출력 ─────────────────────────────────────────────────────────────────
-if "result" in st.session_state:
-    result = st.session_state["result"]
-    persona = result.get("characterPersona", {})
-    questions = result.get("questions", {})
-    alt_texts = st.session_state.get("alt_texts", {})
-    scene_summaries = st.session_state.get("scene_summaries", "")
-
-    # Summary & Story Elements
-    with st.expander("Story Analysis", expanded=True):
-        st.markdown(f"**Summary** {result.get('summary', '')}")
-        elements = result.get("storyElements", {})
+    with st.expander("① Story Analysis", expanded=True):
+        st.markdown(f"**Summary**  \n{analysis.get('summary', '')}")
+        st.divider()
         el_col1, el_col2 = st.columns(2)
         with el_col1:
             st.markdown(f"**Characters** {elements.get('characters', '')}")
@@ -622,8 +565,41 @@ if "result" in st.session_state:
             st.markdown(f"**Resolution** {elements.get('resolution', '')}")
             st.markdown(f"**Moral** {elements.get('moral', '')}")
 
-    # Character Persona
-    with st.expander("Character Persona", expanded=False):
+    st.divider()
+    generate_clicked = st.button("② 페르소나 및 질문 생성하기", type="primary")
+
+    if generate_clicked:
+        if not selected_types:
+            st.error("질문 유형을 하나 이상 선택해주세요.")
+        else:
+            with st.spinner("AI가 페르소나 및 질문 풀을 생성하고 있습니다..."):
+                try:
+                    prompt = build_prompt(
+                        st.session_state["story_text_saved"],
+                        st.session_state["story_analysis"],
+                        user_patterns, keywords, story_words, selected_types, cefr_level,
+                    )
+                    raw = call_api(api_key, api_provider, prompt)
+                    st.session_state["result"] = json.loads(raw)
+                except Exception as e:
+                    st.error(f"오류가 발생했습니다: {e}")
+
+# ── Alt 텍스트 미리보기 ────────────────────────────────────────────────────────
+if "alt_texts" in st.session_state and st.session_state["alt_texts"]:
+    with st.expander("생성된 Alt 텍스트", expanded=False):
+        for scene_key, alt in sorted(st.session_state["alt_texts"].items()):
+            st.markdown(f"**{scene_key}** {alt}")
+
+# ── ② 결과 출력 ───────────────────────────────────────────────────────────────
+if "result" in st.session_state:
+    result = st.session_state["result"]
+    persona = result.get("characterPersona", {})
+    questions = result.get("questions", {})
+    alt_texts = st.session_state.get("alt_texts", {})
+    story_text_saved = st.session_state.get("story_text_saved", "")
+    story_analysis = st.session_state.get("story_analysis", {})
+
+    with st.expander("Character Persona", expanded=True):
         c1, c2, c3 = st.columns(3)
         c1.metric("Name", persona.get("name", "-"))
         c2.metric("Age", persona.get("age", "-"))
@@ -635,19 +611,17 @@ if "result" in st.session_state:
             opening = " ".join(opening)
         st.markdown(f"**Opening Line** *\"{opening}\"*")
 
-    # Patterns
     patterns_list = result.get("patterns", [])
     if patterns_list:
         with st.expander("Patterns", expanded=False):
             for p in patterns_list:
                 st.markdown(f"- {p}")
 
-    # Download buttons
     dl_col1, dl_col2 = st.columns(2)
     with dl_col1:
         st.download_button(
             "Excel 다운로드",
-            data=build_excel(result, alt_texts),
+            data=build_excel(result, story_analysis, alt_texts),
             file_name="questions.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True,
@@ -669,5 +643,5 @@ if "result" in st.session_state:
                 for i, q in enumerate(questions.get(key, [])):
                     render_question(
                         q, i, key, api_key, api_provider,
-                        scene_summaries, keywords, story_words, alt_texts, cefr_level,
+                        story_text_saved, keywords, story_words, alt_texts, cefr_level,
                     )
