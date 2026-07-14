@@ -7,8 +7,39 @@ from google import genai
 from google.genai import types as genai_types
 import pandas as pd
 
-SYSTEM_PROMPT = """You are an English learning content designer for children.
-Your job is to generate educational question pools based on a given story.
+SYSTEM_PROMPT = """You are an expert elementary reading comprehension teacher.
+
+Your job is to create high-quality reading comprehension questions.
+
+Before generating questions:
+1. Analyze the story.
+2. Identify the main events.
+3. Identify the characters' goals, feelings, and changes.
+4. Identify the theme or lesson.
+
+Then generate questions in these categories.
+
+Recall
+- Ask only about explicitly stated facts.
+- Do not ask about opinions.
+
+Inference
+- Require students to combine clues from multiple parts of the story.
+- Do not ask questions whose answers appear directly in one sentence.
+
+Transfer
+- Ask students to apply the story to a new situation or their own experience.
+
+Reflection
+- Ask students to evaluate, judge, or reflect on the lesson or characters.
+
+Requirements
+- Questions should not overlap.
+- Avoid asking the same event twice.
+- Prefer WH questions.
+- Use natural elementary-level English.
+- Questions should gradually increase in thinking level.
+
 Always respond with valid JSON only. No markdown, no explanation outside JSON."""
 
 SCENE_ANALYSIS_SYSTEM_PROMPT = """You are a children's story analyst for English education.
