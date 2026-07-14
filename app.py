@@ -47,7 +47,6 @@ Analyze story texts and extract structured scene-by-scene information.
 Always respond with valid JSON only. No markdown, no explanation outside JSON."""
 
 QUESTION_TYPES = [
-    ("patternPractice", "Pattern Practice"),
     ("recall", "Recall"),
     ("inference", "Inference"),
     ("transfer", "Transfer"),
@@ -138,108 +137,110 @@ Rules:
         return data["scenes"] if isinstance(data, dict) and "scenes" in data else data
 
 
-def build_prompt(scene_summaries, patterns, keywords, story_words, selected_types, cefr_level="B1"):
+def build_prompt(scene_summaries, keywords, story_words, selected_types, cefr_level="B1"):
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     return f"""
-Book Level: {cefr_level} (maximum CEFR vocabulary level allowed)
+Book Level: CEFR {cefr_level}
+Sentence Structure Guide: {sentence_structure_guide}
 
-CEFR {cefr_level} Sentence Structure Guide:
-{sentence_structure_guide}
-Apply this sentence structure to ALL questions and target answers.
-
-Scene-by-Scene Story Summary (basis for question generation):
+Scene-by-Scene Story Summary:
 {scene_summaries}
 
-Core Patterns for Pattern Practice:
-{patterns}
+Keywords (may appear in questions): {keywords}
+Story Words (must NOT be used in questions — replace with simpler vocabulary): {story_words}
 
-Keywords (tutor may use these in questions):
-{keywords}
+Follow these steps exactly.
 
-Story Words (tutor must NOT use these words in questions — use simpler or different vocabulary instead):
-{story_words}
+Step 1.
+Summarize the story in 3 sentences.
 
-Generate the following question types: {", ".join(selected_types)}
+Step 2.
+Identify:
+- characters
+- setting
+- conflict
+- resolution
+- moral
+
+Step 3.
+Generate:
+- Core Message (one sentence capturing the story's central lesson)
+- Opening Line (a single continuous tutor script: warm greeting → character's name → one-sentence theme → simple preference question with no right answer. Write as natural connected speech.)
+- Patterns (3–5 key language patterns from the story, each as a short label with one example sentence)
+- 5 questions for each selected type: {", ".join(selected_types)}
+
+Do not repeat ideas across questions or types.
 
 Return a JSON object with this exact structure:
 {{
-  "characterPersona": {{
-    "name": "character name (derived from the story)",
-    "age": "exact age as a single number derived from the story (e.g., \\"10 years old\\" or \\"11 years old\\")",
-    "gender": "gender (derived from the story)",
-    "personality": "personality description in English (derived from the story)",
-    "coreMessage": "core message in English (derived from the story)",
-    "openingLine": "a single continuous tutor script that naturally flows through: (1) a warm greeting, (2) the character's self-introduction by name, (3) one sentence capturing the story's core theme or personal message (e.g., I am strong inside.), and (4) a simple preference question with no right or wrong answer (e.g., What sport do you like?). Write it as natural connected speech, not as separate labeled parts."
+  "summary": "3-sentence story summary",
+  "storyElements": {{
+    "characters": "main characters and their roles",
+    "setting": "when and where the story takes place",
+    "conflict": "the main problem or challenge",
+    "resolution": "how the conflict is resolved",
+    "moral": "the lesson or theme"
   }},
+  "characterPersona": {{
+    "name": "character name",
+    "age": "exact age derived from the story (e.g., \\"10 years old\\")",
+    "gender": "gender",
+    "personality": "personality description",
+    "coreMessage": "one-sentence core message",
+    "openingLine": "single continuous tutor script as described above"
+  }},
+  "patterns": [
+    "Pattern label — Example: example sentence from the story context.",
+    "Pattern label — Example: example sentence from the story context."
+  ],
   "questions": {{
-    "patternPractice": [
-      {{
-        "question": "Say it with me: 'I [pattern sentence]'",
-        "relatedScene": "SC##",
-        "targetAnswer": "exact sentence starting with I for the student to repeat (e.g., I am not scared anymore.)",
-        "acceptableCriteria": "grading criterion in Korean"
-      }}
-    ],
     "recall": [
       {{
-        "question": "factual question about the story (tutor asks from character's POV using 'I')",
+        "question": "WH question about an explicitly stated fact",
         "relatedScene": "SC##",
-        "targetAnswers": ["You + answer variant 1", "You + answer variant 2"],
-        "acceptableCriteria": "grading criterion in Korean"
+        "targetAnswers": ["answer variant 1", "answer variant 2"],
+        "acceptableCriteria": "채점 기준 (Korean)"
       }}
     ],
     "inference": [
       {{
-        "question": "inference question (tutor asks from character's POV using 'I')",
+        "question": "single direct WH question requiring clues from multiple parts of the story",
         "relatedScene": "SC##",
-        "targetAnswers": ["You + answer variant 1", "You + answer variant 2"],
-        "acceptableCriteria": "grading criterion in Korean"
+        "targetAnswers": ["answer variant 1", "answer variant 2"],
+        "acceptableCriteria": "채점 기준 (Korean)"
       }}
     ],
     "transfer": [
       {{
-        "question": "question connecting story to learner's own life",
+        "question": "question applying the story theme to the learner's own life",
         "relatedScene": "SC##",
         "targetAnswers": ["example answer 1", "example answer 2"],
-        "acceptableCriteria": "grading criterion in Korean"
+        "acceptableCriteria": "채점 기준 (Korean)"
       }}
     ],
     "reflection": [
       {{
-        "question": "open-ended reflection question about the story",
+        "question": "question asking the learner to evaluate, judge, or reflect",
         "relatedScene": "SC##",
         "targetAnswers": ["example answer 1", "example answer 2"],
-        "acceptableCriteria": "grading criterion in Korean"
+        "acceptableCriteria": "채점 기준 (Korean)"
       }}
     ]
   }}
 }}
 
 Rules:
-- Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
-- All questions within each type must be ordered by scene (SC01 before SC02, etc.), following the chronological flow of the story.
-- Only reference scenes that appear in the Scene-by-Scene Story Summary above. Do not invent scenes not listed there.
-- patternPractice: generate 5 different sentences for the learner to repeat. Each sentence must be unique — do not repeat the same sentence. The sentences do not need to be exact quotes from the story; they should be natural applications or variations of the core patterns within the story's context and flow. Each question must follow the format: "Say it with me: 'I [pattern sentence]'" — the pattern sentence must use "I" as the subject (tutor speaking as the character). The targetAnswer must also start with "I" (the student repeats the sentence using "I"). The acceptableCriteria for each patternPractice question must follow this format: "발음을 명확하게 하지 않아도 '[해당 문장의 핵심 구조 또는 패턴]'를 포함해서 말하면 정답으로 인정한다." — replace the bracketed part with the specific grammatical structure or key phrase of that sentence (e.g., 'not + 형용사 구조', 'I used to + 동사 구조').
-- recall: questions must be answerable directly from the story summary only, and must have a single, specific, unambiguous answer explicitly stated in the story. Do NOT generate questions where the answer would be vague or non-specific — for example, avoid questions about uncounted quantities (e.g., "How much gold?" → "much gold" is not an acceptable answer), or questions where the story only implies a general amount rather than a precise fact. Stick to questions whose answers are concrete: a specific name, place, action, object, or clearly stated fact. The acceptableCriteria for each recall question must specify the exact keyword(s) or key content that must appear in the answer — not a generic statement. Format: "'[keyword]'를 포함하여 말하면 정답으로 인정한다." or "[핵심 내용]이 드러나게 말하면 정답으로 인정한다." Include any important constraints (e.g., verb synonyms allowed, specific word variants accepted).
-- inference: questions require reading between the lines of the story, but the answer must still be grounded in the story summary — do NOT generate questions that cannot be answered based on what is described in the scenes (e.g., no speculative "what do you think would happen if..." questions). Write each question as a single direct question only — do NOT add any setup or context sentences before it (e.g., do NOT write "I had heavy gold. I saw a man on a horse. Why did I want to ride a horse?" — just write "Why did I want to ride a horse?"). Adding context sentences before the question gives away the answer and defeats the purpose of inference. The acceptableCriteria for each inference question must specify the exact keyword(s) or key meaning that must appear in the answer — not a generic statement. Format: "'[keyword]' 또는 '[keyword]'를 포함하여 [핵심 의미]가 드러나면 정답으로 인정한다." Include semantic variants where appropriate (e.g., synonyms or paraphrases that convey the same meaning).
-- transfer: questions ask the learner about their own experience or opinion, linked to story themes. The acceptableCriteria for each transfer question must be specific to that question — not a generic statement. Specify the type of response that counts as correct: relevant keywords, emotional vocabulary, categories of examples (e.g., sports/activities/situations), or meaningful content the learner's answer must include. Format: "[keyword 또는 카테고리 예시]를 포함하거나 [핵심 의미]가 드러나면 정답으로 인정한다."
-- reflection: open-ended questions asking for evaluation or advice about story events. The acceptableCriteria for each reflection question must be specific to that question — not a generic statement. Follow these patterns based on question type:
-  * For opinion/judgment questions (Do you think...? Would you...?): "Yes 또는 No라고 답한 뒤, [핵심 내용]을 타당한 근거와 함께 설명하면 정답으로 인정한다. [keyword1], [keyword2] 등의 의미를 포함하면 더 적절한 답변으로 본다."
-  * For questions asking what the learner learned or felt from the story: "[캐릭터] 이야기의 메시지와 연결하여 [핵심 주제: 예 - 자신감, 연습, 자기 힘] 등의 의미가 드러나면 정답으로 인정한다."
-  * For advice-giving questions (What would you say to...?): "결과와 상관없이 [노력/자신감/연습/자기 힘] 등을 인정하거나 격려하는 내용이면 정답으로 인정한다."
-  Always specify (1) expected response format, (2) acceptable keywords or meanings, and (3) what makes an answer especially strong, if applicable.
-- Questions must be asked from the tutor's (character's) first-person perspective using "I" (e.g., "What sport did I love?").
-- patternPractice targetAnswer must use "I" as the subject (student repeats the pattern sentence as the character).
-- For recall and inference, all targetAnswers must use "You" as the subject — the learner answers about the character (e.g., "You loved tennis." not "I loved tennis.").
-- For transfer and reflection, where the learner talks about themselves, answers may use "I" naturally (e.g., "I feel happy when I play soccer.").
-- VOCABULARY LEVEL CONSTRAINT: The book level is CEFR {cefr_level}. All vocabulary used in questions and target answers must not exceed CEFR {cefr_level}. Do not use any word more complex than CEFR {cefr_level}. This applies to every word in every question, answer, and the acceptableCriteria (Korean text in acceptableCriteria is exempt from CEFR rules).
-- SENTENCE STRUCTURE CONSTRAINT: Apply the CEFR {cefr_level} sentence structure guide above to all questions and target answers. Do not use grammar or sentence patterns more complex than what is specified for this level.
-- The tutor's question wording may include provided Keywords, but must NOT use Story Words. Replace story words with simpler or alternative vocabulary that conveys the same meaning.
-- Acceptable criteria must be written in Korean.
-- All questions and answers must be in English.
-- characterPersona fields (name, age, gender, personality, coreMessage, openingLine) must ALL be written in English, derived from the story.
-- The openingLine field must be a single string of continuous natural speech (not an array, not labeled sections).
-- age must be a single exact age (e.g., "10 years old"), not a range.
+- Generate exactly 5 questions per selected type (omit unselected types entirely).
+- Order questions within each type chronologically by scene.
+- Only reference scenes listed in the Scene-by-Scene Story Summary.
+- recall: answers must be explicitly stated in the story. Avoid vague quantity answers (e.g., "much gold"). Stick to concrete facts: names, places, actions, objects. acceptableCriteria must name the exact required keyword(s).
+- inference: ask a single direct question only — no setup sentences before it. The answer must be derivable from story clues, not speculation. acceptableCriteria must name the exact keyword(s) or meaning required.
+- transfer: link to story themes; accept any relevant personal answer. acceptableCriteria must specify what type of content counts as correct.
+- reflection: ask for evaluation or judgment. acceptableCriteria must specify expected format (Yes/No + reason, or open explanation) and key meanings that make a strong answer.
+- VOCABULARY: Do not exceed CEFR {cefr_level} in any question or answer. Apply the sentence structure guide above.
+- All questions and answers must be in English. acceptableCriteria must be in Korean.
+- age must be a single exact number (e.g., "10 years old"), not a range.
+- openingLine must be a single string of natural connected speech, not an array.
 """
 
 
@@ -319,8 +320,8 @@ def regenerate_question(api_key, api_provider, scene_summaries, keywords, story_
     prompt = f"""Scene-by-Scene Story Summary:
 {scene_summaries}
 
-Book Level: CEFR {cefr_level} — all vocabulary in questions and answers must not exceed this level.
-CEFR {cefr_level} Sentence Structure Guide: {sentence_structure_guide}
+Book Level: CEFR {cefr_level} — vocabulary must not exceed this level.
+Sentence Structure Guide: {sentence_structure_guide}
 Keywords (may be used in questions): {keywords}
 Story Words (must NOT be used in questions): {story_words}
 
@@ -338,6 +339,7 @@ Valid JSON only. No markdown, no explanation outside JSON."""
 
 
 def build_excel(result, alt_texts):
+    # Questions sheet
     rows = []
     for type_key, type_label in QUESTION_TYPES:
         for q in result.get("questions", {}).get(type_key, []):
@@ -351,10 +353,35 @@ def build_excel(result, alt_texts):
                 "Alt Text": alt_texts.get(scene, ""),
                 "Acceptable Criteria": q.get("acceptableCriteria", ""),
             })
-    df = pd.DataFrame(rows, columns=["Type", "Question", "Target Answer", "Related Scene", "Alt Text", "Acceptable Criteria"])
+    df_q = pd.DataFrame(rows, columns=["Type", "Question", "Target Answer", "Related Scene", "Alt Text", "Acceptable Criteria"])
+
+    # Story Info sheet
+    persona = result.get("characterPersona", {})
+    elements = result.get("storyElements", {})
+    opening = persona.get("openingLine", "")
+    if isinstance(opening, list):
+        opening = " ".join(opening)
+    info_rows = [
+        {"Field": "Summary", "Value": result.get("summary", "")},
+        {"Field": "Characters", "Value": elements.get("characters", "")},
+        {"Field": "Setting", "Value": elements.get("setting", "")},
+        {"Field": "Conflict", "Value": elements.get("conflict", "")},
+        {"Field": "Resolution", "Value": elements.get("resolution", "")},
+        {"Field": "Moral", "Value": elements.get("moral", "")},
+        {"Field": "Core Message", "Value": persona.get("coreMessage", "")},
+        {"Field": "Opening Line", "Value": opening},
+    ]
+    df_info = pd.DataFrame(info_rows)
+
+    # Patterns sheet
+    patterns = result.get("patterns", [])
+    df_patterns = pd.DataFrame({"Pattern": patterns})
+
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Questions")
+        df_q.to_excel(writer, index=False, sheet_name="Questions")
+        df_info.to_excel(writer, index=False, sheet_name="Story Info")
+        df_patterns.to_excel(writer, index=False, sheet_name="Patterns")
     return buf.getvalue()
 
 
@@ -451,14 +478,6 @@ with st.sidebar:
         "이미지",
         type=["png", "jpg", "jpeg", "webp"],
         accept_multiple_files=True,
-        label_visibility="collapsed",
-    )
-
-    st.subheader("핵심 패턴 (Pattern Practice용)")
-    patterns = st.text_area(
-        "패턴",
-        placeholder="not {adj} anymore",
-        height=100,
         label_visibility="collapsed",
     )
 
@@ -569,7 +588,7 @@ if "scene_analysis" in st.session_state:
 
                 with st.spinner("AI가 페르소나 및 질문 풀을 생성하고 있습니다..."):
                     try:
-                        prompt = build_prompt(scene_summaries, patterns, keywords, story_words, selected_types, cefr_level)
+                        prompt = build_prompt(scene_summaries, keywords, story_words, selected_types, cefr_level)
                         raw = call_api(api_key, api_provider, prompt)
                         st.session_state["result"] = json.loads(raw)
                         st.session_state["scene_summaries"] = scene_summaries
@@ -590,36 +609,57 @@ if "result" in st.session_state:
     alt_texts = st.session_state.get("alt_texts", {})
     scene_summaries = st.session_state.get("scene_summaries", "")
 
-    with st.expander("Character Persona", expanded=True):
+    # Summary & Story Elements
+    with st.expander("Story Analysis", expanded=True):
+        st.markdown(f"**Summary** {result.get('summary', '')}")
+        elements = result.get("storyElements", {})
+        el_col1, el_col2 = st.columns(2)
+        with el_col1:
+            st.markdown(f"**Characters** {elements.get('characters', '')}")
+            st.markdown(f"**Setting** {elements.get('setting', '')}")
+            st.markdown(f"**Conflict** {elements.get('conflict', '')}")
+        with el_col2:
+            st.markdown(f"**Resolution** {elements.get('resolution', '')}")
+            st.markdown(f"**Moral** {elements.get('moral', '')}")
+
+    # Character Persona
+    with st.expander("Character Persona", expanded=False):
         c1, c2, c3 = st.columns(3)
         c1.metric("Name", persona.get("name", "-"))
         c2.metric("Age", persona.get("age", "-"))
         c3.metric("Gender", persona.get("gender", "-"))
         st.markdown(f"**Personality** {persona.get('personality', '')}")
         st.markdown(f"**Core Message** {persona.get('coreMessage', '')}")
-
         opening = persona.get("openingLine", "")
         if isinstance(opening, list):
             opening = " ".join(opening)
         st.markdown(f"**Opening Line** *\"{opening}\"*")
 
-        dl_col1, dl_col2 = st.columns(2)
-        with dl_col1:
-            st.download_button(
-                "Excel 다운로드",
-                data=build_excel(result, alt_texts),
-                file_name="questions.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True,
-            )
-        with dl_col2:
-            st.download_button(
-                "JSON 다운로드",
-                data=json.dumps(result, ensure_ascii=False, indent=2),
-                file_name="result.json",
-                mime="application/json",
-                use_container_width=True,
-            )
+    # Patterns
+    patterns_list = result.get("patterns", [])
+    if patterns_list:
+        with st.expander("Patterns", expanded=False):
+            for p in patterns_list:
+                st.markdown(f"- {p}")
+
+    # Download buttons
+    dl_col1, dl_col2 = st.columns(2)
+    with dl_col1:
+        st.download_button(
+            "Excel 다운로드",
+            data=build_excel(result, alt_texts),
+            file_name="questions.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True,
+        )
+    with dl_col2:
+        st.download_button(
+            "JSON 다운로드",
+            data=json.dumps(result, ensure_ascii=False, indent=2),
+            file_name="result.json",
+            mime="application/json",
+            use_container_width=True,
+        )
 
     active_types = [(k, l) for k, l in QUESTION_TYPES if k in questions and k in selected_types]
     if active_types:
