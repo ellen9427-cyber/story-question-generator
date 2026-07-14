@@ -8,6 +8,8 @@ Story Analysis:
 <<STORY_CONTEXT>>
 
 Core Patterns for Pattern Practice (provided by user):
+Each entry is formatted as "- Pattern: [pattern] | Example: [example sentence]".
+Use the pattern exactly as written. The example sentence shows how to use the pattern.
 <<USER_PATTERNS>>
 
 Keywords (may appear in questions): <<KEYWORDS>>

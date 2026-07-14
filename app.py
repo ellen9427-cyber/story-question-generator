@@ -115,6 +115,18 @@ Return valid JSON only."""
         return json.loads(response.text)
 
 
+def _format_patterns(raw: str) -> str:
+    lines = [l.strip() for l in raw.strip().splitlines() if l.strip()]
+    formatted = []
+    for line in lines:
+        if "," in line:
+            pattern, example = line.split(",", 1)
+            formatted.append(f"- Pattern: {pattern.strip()} | Example: {example.strip()}")
+        else:
+            formatted.append(f"- Pattern: {line}")
+    return "\n".join(formatted) if formatted else raw
+
+
 def build_prompt(story_text, story_analysis, user_patterns, keywords, story_words, selected_types, cefr_level="B1"):
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     summary = story_analysis.get("summary", "")
@@ -134,7 +146,7 @@ def build_prompt(story_text, story_analysis, user_patterns, keywords, story_word
         .replace("<<SENTENCE_STRUCTURE_GUIDE>>", sentence_structure_guide)
         .replace("<<STORY_TEXT>>", story_text)
         .replace("<<STORY_CONTEXT>>", story_context)
-        .replace("<<USER_PATTERNS>>", user_patterns)
+        .replace("<<USER_PATTERNS>>", _format_patterns(user_patterns))
         .replace("<<KEYWORDS>>", keywords)
         .replace("<<STORY_WORDS>>", story_words)
         .replace("<<SELECTED_TYPES>>", ", ".join(selected_types))
@@ -237,6 +249,29 @@ Valid JSON only. No markdown, no explanation outside JSON."""
 
     raw = call_api(api_key, api_provider, prompt)
     return json.loads(raw)
+
+
+def regenerate_opening_line(api_key, api_provider, story_text, persona, story_analysis):
+    elements = story_analysis.get("storyElements", {})
+    prompt = f"""You are an expert elementary English reading comprehension teacher.
+
+Story Text:
+{story_text}
+
+Character: {persona.get('name', '')} ({persona.get('age', '')}, {persona.get('gender', '')})
+Core Message: {persona.get('coreMessage', '')}
+Story Moral: {elements.get('moral', '')}
+
+Generate a new Opening Line for the tutor character persona.
+It must be a single continuous string of natural speech that flows:
+warm greeting → character's name → one-sentence theme → simple preference question with no right or wrong answer.
+
+Return a JSON object:
+{{"openingLine": "the new opening line"}}
+
+Valid JSON only."""
+    raw = call_api(api_key, api_provider, prompt)
+    return json.loads(raw)["openingLine"]
 
 
 def build_excel(result, story_analysis, alt_texts):
@@ -406,10 +441,11 @@ with st.sidebar:
     )
 
     st.subheader("핵심 패턴 (Pattern Practice용)")
+    st.caption("패턴, 예시 형식으로 한 줄씩 입력 (쉼표로 구분)")
     user_patterns = st.text_area(
         "패턴",
-        placeholder="not {adj} anymore",
-        height=100,
+        placeholder="not {adj} anymore, I'm not scared anymore.\nI used to {verb}, I used to give up easily.",
+        height=120,
         label_visibility="collapsed",
     )
 
@@ -523,6 +559,7 @@ if "story_analysis" in st.session_state:
                     raw = call_api(api_key, api_provider, prompt)
                     result_data = json.loads(raw)
                     st.session_state["result"] = result_data
+                    st.session_state.pop("opening_line_input", None)
                     _ls.setItem(CACHE_KEY, json.dumps({
                         "saved_at": time.time(),
                         "story_analysis": st.session_state["story_analysis"],
@@ -555,10 +592,31 @@ if "result" in st.session_state:
         c3.metric("Gender", persona.get("gender", "-"))
         st.markdown(f"**Personality** {persona.get('personality', '')}")
         st.markdown(f"**Core Message** {persona.get('coreMessage', '')}")
-        opening = persona.get("openingLine", "")
-        if isinstance(opening, list):
-            opening = " ".join(opening)
-        st.markdown(f"**Opening Line** *\"{opening}\"*")
+        st.markdown("**Opening Line**")
+        if "opening_line_input" not in st.session_state:
+            opening_raw = persona.get("openingLine", "")
+            if isinstance(opening_raw, list):
+                opening_raw = " ".join(opening_raw)
+            st.session_state["opening_line_input"] = opening_raw
+        st.text_area(
+            "Opening Line",
+            key="opening_line_input",
+            height=80,
+            label_visibility="collapsed",
+        )
+        result["characterPersona"]["openingLine"] = st.session_state.get("opening_line_input", "")
+        if st.button("Opening Line 재생성", key="regen_opening"):
+            with st.spinner("재생성 중..."):
+                try:
+                    new_opening = regenerate_opening_line(
+                        api_key, api_provider, story_text_saved, persona,
+                        st.session_state.get("story_analysis", {}),
+                    )
+                    st.session_state["result"]["characterPersona"]["openingLine"] = new_opening
+                    st.session_state["opening_line_input"] = new_opening
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"오류: {e}")
 
     patterns_list = result.get("patterns", [])
     if patterns_list:
