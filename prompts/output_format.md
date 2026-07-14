@@ -64,7 +64,7 @@ Rules:
 - inference: single direct question only — no setup sentences before it. Answer must be derivable from story clues, not speculation. acceptableCriteria must name exact keyword(s) or meaning required.
 - transfer: link to story themes; accept any relevant personal answer. acceptableCriteria must specify what type of content counts as correct.
 - reflection: ask for evaluation or judgment. acceptableCriteria must specify expected format and key meanings that make a strong answer.
-- VOCABULARY: Do not exceed CEFR <<CEFR_LEVEL>> in any question or answer. Apply the sentence structure guide above.
+- VOCABULARY: Do not exceed CEFR <<CEFR_LEVEL>> in any question or answer. If a concept requires a word above this level, replace it with a simpler synonym at or below <<CEFR_LEVEL>>. Do not keep the harder word just because it is more precise — always prefer the simpler alternative. Example substitutions: "valuable" → "special" or "important"; "terrified" → "very scared"; "exhausted" → "very tired"; "enormous" → "very big". Apply the sentence structure guide above.
 - All questions and answers must be in English. acceptableCriteria must be in Korean.
 - age must be a single exact number (e.g., "10 years old"), not a range.
 - openingLine must be a single string of natural connected speech, not an array.
