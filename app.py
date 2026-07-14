@@ -74,15 +74,17 @@ def analyze_story(api_key, api_provider, story_text):
 Story Text:
 {story_text}
 
+Write all values in Korean.
+
 Return a JSON object with this exact structure:
 {{
-  "summary": "Summarize the story in exactly 3 sentences.",
+  "summary": "이야기를 정확히 3문장으로 요약하세요.",
   "storyElements": {{
-    "characters": "main characters and their roles",
-    "setting": "when and where the story takes place",
-    "conflict": "the main problem or challenge",
-    "resolution": "how the conflict is resolved",
-    "moral": "the lesson or theme"
+    "characters": "주요 등장인물과 역할",
+    "setting": "이야기의 시간적·공간적 배경",
+    "conflict": "주요 갈등 또는 문제",
+    "resolution": "갈등이 해결되는 방식",
+    "moral": "이야기의 교훈 또는 주제"
   }}
 }}
 
