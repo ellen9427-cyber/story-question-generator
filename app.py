@@ -1,11 +1,13 @@
 import base64
 import io
 import json
+import time
 import streamlit as st
 import openai
 from google import genai
 from google.genai import types as genai_types
 import pandas as pd
+from streamlit_local_storage import LocalStorage
 
 SYSTEM_PROMPT = """You are an expert elementary English reading comprehension teacher.
 
@@ -510,10 +512,34 @@ def render_question(q, idx, question_type, api_key, api_provider, story_text, ke
                         st.error(f"오류: {e}")
 
 
+CACHE_KEY = "sgq_cache_v1"
+CACHE_TTL = 5 * 24 * 3600  # 5일 (초 단위)
+
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Story Question Generator", layout="wide")
 st.title("Story Question Generator")
 st.caption("스토리를 분석하고 페르소나와 질문을 생성합니다.")
+
+# ── 로컬 스토리지 초기화 및 캐시 복원 ────────────────────────────────────────
+_ls = LocalStorage()
+_raw_cache = _ls.getItem(CACHE_KEY)
+_cache_data = None
+_cache_age_days = None
+
+if _raw_cache:
+    try:
+        _parsed = json.loads(_raw_cache)
+        _age = time.time() - _parsed.get("saved_at", 0)
+        if _age < CACHE_TTL:
+            _cache_data = _parsed
+            _cache_age_days = _age / 86400
+    except Exception:
+        pass
+
+if _cache_data and "story_analysis" not in st.session_state:
+    for _k in ["story_analysis", "story_text_saved", "result", "alt_texts"]:
+        if _cache_data.get(_k):
+            st.session_state[_k] = _cache_data[_k]
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -584,6 +610,15 @@ with st.sidebar:
     st.divider()
     analyze_clicked = st.button("① 스토리 분석하기", type="primary", use_container_width=True)
 
+    if _cache_data:
+        _remaining = 5 - _cache_age_days
+        st.caption(f"💾 {_cache_age_days:.1f}일 전 저장 · 만료까지 {_remaining:.1f}일")
+        if st.button("캐시 삭제", use_container_width=True):
+            _ls.deleteItem(CACHE_KEY)
+            for _k in ["story_analysis", "story_text_saved", "result", "alt_texts"]:
+                st.session_state.pop(_k, None)
+            st.rerun()
+
 # ── ① 스토리 분석 ─────────────────────────────────────────────────────────────
 if analyze_clicked:
     if not story_text.strip():
@@ -616,6 +651,13 @@ if analyze_clicked:
                 st.session_state["story_analysis"] = analysis
                 st.session_state["story_text_saved"] = story_text
                 st.session_state.pop("result", None)
+                _ls.setItem(CACHE_KEY, json.dumps({
+                    "saved_at": time.time(),
+                    "story_analysis": analysis,
+                    "story_text_saved": story_text,
+                    "alt_texts": st.session_state.get("alt_texts"),
+                    "result": None,
+                }, ensure_ascii=False))
             except Exception as e:
                 st.error(f"분석 오류: {e}")
 
@@ -651,7 +693,15 @@ if "story_analysis" in st.session_state:
                         user_patterns, keywords, story_words, selected_types, cefr_level,
                     )
                     raw = call_api(api_key, api_provider, prompt)
-                    st.session_state["result"] = json.loads(raw)
+                    result_data = json.loads(raw)
+                    st.session_state["result"] = result_data
+                    _ls.setItem(CACHE_KEY, json.dumps({
+                        "saved_at": time.time(),
+                        "story_analysis": st.session_state["story_analysis"],
+                        "story_text_saved": st.session_state["story_text_saved"],
+                        "alt_texts": st.session_state.get("alt_texts"),
+                        "result": result_data,
+                    }, ensure_ascii=False))
                 except Exception as e:
                     st.error(f"오류가 발생했습니다: {e}")
 
