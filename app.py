@@ -113,6 +113,16 @@ Requirements:
 - Do not quote or copy sentences directly from the story unless required for Pattern Practice.
 - Rephrase naturally instead of repeating the original wording.
 
+## Question Quality Rules
+
+Before finalizing each question, verify that:
+
+- The question measures the intended thinking skill.
+- The question cannot be answered without reading the story.
+- The question is specific to this story rather than applicable to most stories.
+- The answer is reasonably clear and not overly broad.
+- The question is engaging and encourages meaningful thinking.
+
 Always respond with valid JSON only. No markdown, no explanation outside JSON."""
 
 SCENE_ANALYSIS_SYSTEM_PROMPT = """You are a children's story analyst for English education.
