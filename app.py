@@ -2,6 +2,7 @@ import base64
 import io
 import json
 import time
+from pathlib import Path
 import streamlit as st
 import openai
 from google import genai
@@ -9,121 +10,19 @@ from google.genai import types as genai_types
 import pandas as pd
 from streamlit_local_storage import LocalStorage
 
-SYSTEM_PROMPT = """You are an expert elementary English reading comprehension teacher.
+_PROMPTS_DIR = Path(__file__).parent / "prompts"
 
-Your task is to create high-quality reading comprehension activities for children.
 
-Always follow these thinking steps before generating the output.
+def _load_prompt(filename: str) -> str:
+    return (_PROMPTS_DIR / filename).read_text(encoding="utf-8").strip()
 
-## Step 1. Analyze the Story
 
-Analyze the story first.
-
-Provide the analysis in **Korean** for reviewer verification.
-
-Include the following sections:
-
-- 등장인물 (Characters)
-- 배경 (Setting)
-- 주요 사건 (Major Events)
-- 등장인물의 목표 (Character Goals)
-- 등장인물의 감정 변화 (Character Feelings)
-- 갈등 (Conflict)
-- 해결 (Resolution)
-- 주제 (Theme)
-
-## Step 2. Generate Activities
-
-Generate all activities and questions in **English**.
-
-### Question Types
-
-#### Pattern Practice
-
-A target sentence pattern will be provided separately by the planner.
-
-Generate **5 Pattern Practice sentences** using the provided pattern.
-
-Requirements:
-
-- Follow this exact format:
-
-  Say it with me: "Sentence"
-
-- The sentence inside the quotation marks **must include the provided target pattern**.
-- Use **key vocabulary (verbs, adjectives, nouns, etc.) from the story whenever possible**.
-- **This is the only activity where reusing story words is encouraged.**
-- This is an exception to the rule about avoiding direct reuse of story wording.
-- Create natural, grammatically correct sentences suitable for elementary learners.
-- Do not simply copy an original sentence from the story.
-- Adapt the story vocabulary into a new sentence while keeping the target pattern.
-
-#### Recall
-
-Generate **5 questions**.
-
-Requirements:
-
-- Ask only about facts explicitly stated in the story.
-- Do not ask about opinions.
-
-#### Inference
-
-Generate **5 questions**.
-
-Requirements:
-
-- Require students to connect two or more clues from the story.
-- Do not ask questions whose answers appear directly in a single sentence.
-
-#### Transfer
-
-Generate **5 questions**.
-
-Requirements:
-
-- Ask students to apply the story to a new situation or their own experience.
-
-#### Reflection
-
-Generate **5 questions**.
-
-Requirements:
-
-- Ask students to evaluate, judge, or reflect on the lesson, values, or characters.
-
-## General Requirements
-
-- Generate exactly **5 items** for every activity type.
-- Questions must not overlap in meaning or assess the same idea.
-- Cover different parts of the story whenever possible.
-- Prefer WH questions over Yes/No questions.
-- Use natural English suitable for elementary school learners.
-- Progress from lower-order thinking to higher-order thinking:
-
-  Pattern Practice → Recall → Inference → Transfer → Reflection
-
-## Question Writing Rules
-
-- Every question must consist of exactly **one sentence**.
-- Do not add any introductory, explanatory, or contextual sentence before the question.
-- Do not include information that directly reveals or strongly hints at the answer.
-- Each question should assess only one idea.
-- Keep wording clear, concise, and unambiguous.
-- Do not quote or copy sentences directly from the story unless required for Pattern Practice.
-- Rephrase naturally instead of repeating the original wording.
-
-## Question Quality Rules
-
-Before finalizing each question, verify that:
-
-- The question measures the intended thinking skill.
-- The question cannot be answered without reading the story.
-- The question is specific to this story rather than applicable to most stories.
-- The answer is reasonably clear and not overly broad.
-- The question is engaging and encourages meaningful thinking.
-
-Always respond with valid JSON only. No markdown, no explanation outside JSON."""
+SYSTEM_PROMPT = "\n\n".join([
+    _load_prompt("system_prompt.md"),
+    _load_prompt("analysis_rules.md"),
+    _load_prompt("question_rules.md"),
+    "Always respond with valid JSON only. No markdown, no explanation outside JSON.",
+])
 
 SCENE_ANALYSIS_SYSTEM_PROMPT = """You are a children's story analyst for English education.
 Analyze story texts and extract structured story information.
@@ -218,113 +117,30 @@ def build_prompt(story_text, story_analysis, user_patterns, keywords, story_word
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     summary = story_analysis.get("summary", "")
     elements = story_analysis.get("storyElements", {})
-    story_context = f"""Summary: {summary}
-Characters: {elements.get("characters", "")}
-Setting: {elements.get("setting", "")}
-Conflict: {elements.get("conflict", "")}
-Resolution: {elements.get("resolution", "")}
-Moral: {elements.get("moral", "")}"""
+    story_context = (
+        f"Summary: {summary}\n"
+        f"Characters: {elements.get('characters', '')}\n"
+        f"Setting: {elements.get('setting', '')}\n"
+        f"Conflict: {elements.get('conflict', '')}\n"
+        f"Resolution: {elements.get('resolution', '')}\n"
+        f"Moral: {elements.get('moral', '')}"
+    )
 
-    return f"""
-Book Level: CEFR {cefr_level}
-Sentence Structure Guide: {sentence_structure_guide}
+    user_input = (
+        _load_prompt("user_prompt_template.md")
+        .replace("<<CEFR_LEVEL>>", cefr_level)
+        .replace("<<SENTENCE_STRUCTURE_GUIDE>>", sentence_structure_guide)
+        .replace("<<STORY_TEXT>>", story_text)
+        .replace("<<STORY_CONTEXT>>", story_context)
+        .replace("<<USER_PATTERNS>>", user_patterns)
+        .replace("<<KEYWORDS>>", keywords)
+        .replace("<<STORY_WORDS>>", story_words)
+        .replace("<<SELECTED_TYPES>>", ", ".join(selected_types))
+    )
 
-Story Text:
-{story_text}
+    output_section = _load_prompt("output_format.md").replace("<<CEFR_LEVEL>>", cefr_level)
 
-Story Analysis:
-{story_context}
-
-Core Patterns for Pattern Practice (provided by user):
-{user_patterns}
-
-Keywords (may appear in questions): {keywords}
-Story Words (must NOT be used in questions — replace with simpler vocabulary): {story_words}
-
-Generate the following:
-
-Step 1: Core Message and Opening Line
-- Core Message: one sentence capturing the story's central lesson
-- Opening Line: a single continuous tutor script that flows naturally: warm greeting → character's name → one-sentence theme → simple preference question with no right or wrong answer. Write as natural connected speech.
-
-Step 2: Key Language Patterns
-Generate 3–5 key language patterns from the story. Each as a short label with one example sentence.
-
-Step 3: Questions
-Generate 5 questions for each selected type: {", ".join(selected_types)}
-Do not repeat ideas across questions or types.
-
-Return a JSON object with this exact structure:
-{{
-  "characterPersona": {{
-    "name": "character name",
-    "age": "exact age derived from the story (e.g., \\"10 years old\\")",
-    "gender": "gender",
-    "personality": "personality description",
-    "coreMessage": "one-sentence core message",
-    "openingLine": "single continuous tutor script as described above"
-  }},
-  "patterns": [
-    "Pattern label — Example: example sentence.",
-    "Pattern label — Example: example sentence."
-  ],
-  "questions": {{
-    "patternPractice": [
-      {{
-        "question": "Say it with me: 'I [pattern sentence]'",
-        "relatedScene": "SC##",
-        "targetAnswer": "I [pattern sentence]",
-        "acceptableCriteria": "채점 기준 (Korean)"
-      }}
-    ],
-    "recall": [
-      {{
-        "question": "WH question about an explicitly stated fact",
-        "relatedScene": "SC##",
-        "targetAnswers": ["answer variant 1", "answer variant 2"],
-        "acceptableCriteria": "채점 기준 (Korean)"
-      }}
-    ],
-    "inference": [
-      {{
-        "question": "single direct WH question requiring clues from multiple parts of the story",
-        "relatedScene": "SC##",
-        "targetAnswers": ["answer variant 1", "answer variant 2"],
-        "acceptableCriteria": "채점 기준 (Korean)"
-      }}
-    ],
-    "transfer": [
-      {{
-        "question": "question applying the story theme to the learner's own life",
-        "relatedScene": "SC##",
-        "targetAnswers": ["example answer 1", "example answer 2"],
-        "acceptableCriteria": "채점 기준 (Korean)"
-      }}
-    ],
-    "reflection": [
-      {{
-        "question": "question asking the learner to evaluate, judge, or reflect",
-        "relatedScene": "SC##",
-        "targetAnswers": ["example answer 1", "example answer 2"],
-        "acceptableCriteria": "채점 기준 (Korean)"
-      }}
-    ]
-  }}
-}}
-
-Rules:
-- Generate exactly 5 questions per selected type (omit unselected types entirely).
-- Order questions within each type chronologically by scene.
-- patternPractice: base sentences on the user-provided Core Patterns above. Each question: "Say it with me: 'I [pattern sentence]'". targetAnswer must start with "I". acceptableCriteria format: "발음을 명확하게 하지 않아도 '[핵심 구조]'를 포함해서 말하면 정답으로 인정한다."
-- recall: answers must be explicitly stated in the story. Avoid vague quantity answers. Stick to concrete facts: names, places, actions, objects. acceptableCriteria must name the exact required keyword(s).
-- inference: single direct question only — no setup sentences before it. Answer must be derivable from story clues, not speculation. acceptableCriteria must name exact keyword(s) or meaning required.
-- transfer: link to story themes; accept any relevant personal answer. acceptableCriteria must specify what type of content counts as correct.
-- reflection: ask for evaluation or judgment. acceptableCriteria must specify expected format and key meanings that make a strong answer.
-- VOCABULARY: Do not exceed CEFR {cefr_level} in any question or answer. Apply the sentence structure guide above.
-- All questions and answers must be in English. acceptableCriteria must be in Korean.
-- age must be a single exact number (e.g., "10 years old"), not a range.
-- openingLine must be a single string of natural connected speech, not an array.
-"""
+    return f"{user_input}\n\n{output_section}\n"
 
 
 def call_api(api_key, api_provider, prompt):
