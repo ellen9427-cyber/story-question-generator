@@ -492,22 +492,31 @@ if analyze_clicked:
     else:
         if uploaded_images:
             alt_texts_new = {}
+            failed_scenes = []
             progress = st.progress(0, text="장면 Alt 텍스트 생성 중...")
-            try:
-                for i, img_file in enumerate(uploaded_images):
-                    scene_key = f"SC{i + 1:02d}"
-                    img_file.seek(0)
-                    image_bytes = img_file.read()
-                    mime_type = img_file.type or "image/jpeg"
-                    alt_texts_new[scene_key] = generate_alt_text(
-                        api_key, api_provider, image_bytes, mime_type, scene_key, story_text, cefr_level
-                    )
-                    progress.progress((i + 1) / len(uploaded_images), text=f"{scene_key} 완료")
-                st.session_state["alt_texts"] = alt_texts_new
-            except Exception as e:
-                st.error(f"Alt 생성 오류: {e}")
-            finally:
-                progress.empty()
+            for i, img_file in enumerate(uploaded_images):
+                scene_key = f"SC{i + 1:02d}"
+                img_file.seek(0)
+                image_bytes = img_file.read()
+                mime_type = img_file.type or "image/jpeg"
+                for attempt in range(3):
+                    try:
+                        if i > 0 and attempt == 0:
+                            time.sleep(1)
+                        alt_texts_new[scene_key] = generate_alt_text(
+                            api_key, api_provider, image_bytes, mime_type, scene_key, story_text, cefr_level
+                        )
+                        break
+                    except Exception:
+                        if attempt < 2:
+                            time.sleep(2 ** attempt)
+                        else:
+                            failed_scenes.append(scene_key)
+                progress.progress((i + 1) / len(uploaded_images), text=f"{scene_key} 완료")
+            progress.empty()
+            st.session_state["alt_texts"] = alt_texts_new
+            if failed_scenes:
+                st.warning(f"Alt 텍스트 생성 실패 장면: {', '.join(failed_scenes)} (나머지는 저장됨)")
 
         with st.spinner("스토리를 분석하고 있습니다..."):
             try:
