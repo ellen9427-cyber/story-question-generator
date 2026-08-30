@@ -1,6 +1,7 @@
 import base64
 import io
 import json
+import random
 import time
 from pathlib import Path
 import streamlit as st
@@ -9,6 +10,15 @@ from google import genai
 from google.genai import types as genai_types
 import pandas as pd
 from streamlit_local_storage import LocalStorage
+
+CLOSING_LINES = [
+    "You did such a great job today! See you next time!",
+    "You did really well today. Can't wait to see you again!",
+    "You were amazing today! Bye for now!",
+    "You are a great learner! See you soon!",
+    "Every day you get better and better! See you next time!",
+    "You were amazing today. See you soon!",
+]
 
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
 
@@ -127,7 +137,7 @@ def _format_patterns(raw: str) -> str:
     return "\n".join(formatted) if formatted else raw
 
 
-def build_prompt(story_text, story_analysis, user_patterns, keywords, story_words, selected_types, cefr_level="B1"):
+def build_prompt(story_text, story_analysis, user_patterns, keywords, story_words, selected_types, cefr_level="B1", protagonist_name=""):
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     summary = story_analysis.get("summary", "")
     elements = story_analysis.get("storyElements", {})
@@ -140,6 +150,8 @@ def build_prompt(story_text, story_analysis, user_patterns, keywords, story_word
         f"Moral: {elements.get('moral', '')}"
     )
 
+    protagonist_line = f"Protagonist Name: {protagonist_name.strip()}" if protagonist_name.strip() else ""
+
     user_input = (
         _load_prompt("user_prompt_template.md")
         .replace("<<CEFR_LEVEL>>", cefr_level)
@@ -151,6 +163,8 @@ def build_prompt(story_text, story_analysis, user_patterns, keywords, story_word
         .replace("<<STORY_WORDS>>", story_words)
         .replace("<<SELECTED_TYPES>>", ", ".join(selected_types))
     )
+    if protagonist_line:
+        user_input = protagonist_line + "\n" + user_input
 
     output_section = _load_prompt("output_format.md").replace("<<CEFR_LEVEL>>", cefr_level)
 
@@ -440,6 +454,13 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
+    st.subheader("주인공 이름")
+    protagonist_name = st.text_input(
+        "주인공 이름",
+        placeholder="예: Judy",
+        label_visibility="collapsed",
+    )
+
     st.subheader("핵심 패턴 (Pattern Practice용)")
     st.caption("패턴, 예시 형식으로 한 줄씩 입력 (쉼표로 구분)")
     user_patterns = st.text_area(
@@ -564,10 +585,12 @@ if "story_analysis" in st.session_state:
                         st.session_state["story_text_saved"],
                         st.session_state["story_analysis"],
                         user_patterns, keywords, story_words, selected_types, cefr_level,
+                        protagonist_name,
                     )
                     raw = call_api(api_key, api_provider, prompt)
                     result_data = json.loads(raw)
                     st.session_state["result"] = result_data
+                    st.session_state["closing_line"] = random.choice(CLOSING_LINES)
                     st.session_state.pop("opening_line_input", None)
                     _ls.setItem(CACHE_KEY, json.dumps({
                         "saved_at": time.time(),
@@ -650,6 +673,10 @@ if "result" in st.session_state:
             mime="application/json",
             use_container_width=True,
         )
+
+    closing_line = st.session_state.get("closing_line", "")
+    if closing_line:
+        st.info(f"⭐ **Closing Line** — *\"{closing_line}\"*")
 
     active_types = [(k, l) for k, l in QUESTION_TYPES if k in questions and k in selected_types]
     if active_types:
