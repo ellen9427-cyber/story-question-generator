@@ -25,7 +25,7 @@ Return a JSON object with this exact structure:
       {
         "question": "WH question from the character's POV using 'I' (e.g., 'What sport did I love?')",
         "relatedScene": "SC##",
-        "targetAnswers": ["You [verb]...", "You [verb]..."],
+        "targetAnswers": ["answer in correct grammatical person for the subject of the question", "another acceptable answer"],
         "acceptableCriteria": "채점 기준 (Korean)"
       }
     ],
@@ -33,7 +33,7 @@ Return a JSON object with this exact structure:
       {
         "question": "single direct WH question from the character's POV using 'I' (e.g., 'Why did I feel scared?')",
         "relatedScene": "SC##",
-        "targetAnswers": ["You [verb]...", "You [verb]..."],
+        "targetAnswers": ["answer in correct grammatical person for the subject of the question", "another acceptable answer"],
         "acceptableCriteria": "채점 기준 (Korean)"
       }
     ],
@@ -58,10 +58,10 @@ Return a JSON object with this exact structure:
 
 Rules:
 - Generate exactly 5 questions per selected type (omit unselected types entirely).
-- SCENE ORDER IS MANDATORY: Within every question type, questions MUST appear in chronological scene order — SC01 before SC02, SC02 before SC03, and so on. This is the highest-priority ordering rule and overrides all other considerations. A question mapped to SC05 must never appear before a question mapped to SC03. Do not reorder questions by difficulty, topic, or any other criterion.
-- patternPractice: Each question format: "Say it with me: '[pattern sentence]'". The targetAnswer is the exact same sentence. The sentence can start with any subject (I, He, She, There, Can, The character's name, etc.) — do NOT force "I" as the subject. Story verbatim rule: if the pattern appears as dialogue or a sentence in the story, use that exact text (strip quotation marks and speaker tags). No-duplicate rule: if the same verbatim sentence would repeat across scenes, use it only once (first scene); create a variation for other scenes. Scene order is the primary sort key — always arrange sentences in chronological scene order (SC01 before SC02, etc.). Within that constraint, write each sentence to be slightly longer or more complex than the previous where possible so difficulty generally increases from sentence 1 to sentence 5. acceptableCriteria format: "발음을 명확하게 하지 않아도 '[핵심 구조]'를 포함해서 말하면 정답으로 인정한다."
-- recall: questions use character's "I" POV (e.g., "What sport did I love?"). targetAnswers should address the character with "You [verb]..." but short noun-phrase answers are also acceptable as alternatives (e.g., "A rabbit. / You brought a rabbit." or "Gray. / You were gray."). Never use "she", "he", or the character's name in targetAnswers when referring to the main character. acceptableCriteria must name the exact required keyword(s).
-- inference: same POV rule as recall — questions use "I". targetAnswers use "You [verb]..." for answers about the main character. When the answer is about another character's action or emotion, that character's pronoun ("he", "she") is acceptable. acceptableCriteria must name exact keyword(s) or meaning required.
+- Select the best 5 questions based on quality, story grounding, and type correctness. After selection, sort them in chronological scene order (SC01 → SC02 → SC03...) as the final step. Scene order controls output order only — do not select a weaker question to achieve a different scene position.
+- patternPractice: Each question format: "Say it with me: '[pattern sentence]'". The targetAnswer is the exact same sentence. The sentence can start with any subject (I, He, She, There, Can, The character's name, etc.) — do NOT force "I" as the subject. Story verbatim rule: if the pattern appears as dialogue or a sentence in the story, use that exact text (strip quotation marks and speaker tags). No-duplicate rule: if the same verbatim sentence would repeat across scenes, use it only once (first scene); create a variation for other scenes. Within the scene order constraint, write each sentence to be slightly longer or more complex than the previous where possible so difficulty generally increases from sentence 1 to sentence 5. acceptableCriteria format: "발음을 명확하게 하지 않아도 '[핵심 구조]'를 포함해서 말하면 정답으로 인정한다."
+- recall: questions use character's "I" POV (e.g., "What sport did I love?"). targetAnswers use the correct grammatical person based on who the question is about. When the question refers to the speaking main character, use "You [verb]...". When the question refers to another character, use their correct pronoun or name. Short noun-phrase alternatives are also acceptable (e.g., "A rabbit. / You brought a rabbit."). acceptableCriteria must name the exact required keyword(s).
+- inference: questions use character's "I" POV. targetAnswers use "You [verb]..." when the answer refers to the speaking main character. When the answer is about another character's action or emotion, use that character's correct pronoun ("he", "she") or name. acceptableCriteria must name exact keyword(s) or meaning required.
 - transfer: questions address the learner with "you". targetAnswers start with "I" (learner talks about themselves). acceptableCriteria must specify what type of content counts as correct.
 - reflection: for yes/no questions use "Yes, because [reason]. / No, because [reason]." format; for open-ended questions use "I think..." or "I believe...". acceptableCriteria must specify what evidence or reasoning makes a strong answer for both Yes and No responses.
 - VOCABULARY: Do not exceed CEFR <<CEFR_LEVEL>> in any question or answer. If a concept requires a word above this level, replace it with a simpler synonym at or below <<CEFR_LEVEL>>. Do not keep the harder word just because it is more precise — always prefer the simpler alternative. Example substitutions: "valuable" → "special" or "important"; "terrified" → "very scared"; "exhausted" → "very tired"; "enormous" → "very big". Apply the sentence structure guide above.
