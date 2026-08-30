@@ -49,7 +49,7 @@ Return a JSON object with this exact structure:
       {
         "question": "question asking the learner to evaluate, judge, or reflect",
         "relatedScene": "SC##",
-        "targetAnswers": ["I think...", "I think..."],
+        "targetAnswers": ["level-appropriate natural answer that directly matches the question form", "another valid level-appropriate answer"],
         "acceptableCriteria": "채점 기준 (Korean)"
       }
     ]
@@ -63,7 +63,7 @@ Rules:
 - recall: questions use character's "I" POV (e.g., "What sport did I love?"). targetAnswers use the correct grammatical person based on who the question is about. When the question refers to the speaking main character, use "You [verb]...". When the question refers to another character, use their correct pronoun or name. Short noun-phrase alternatives are also acceptable (e.g., "A rabbit. / You brought a rabbit."). acceptableCriteria must name the exact required keyword(s).
 - inference: questions use character's "I" POV. targetAnswers use "You [verb]..." when the answer refers to the speaking main character. When the answer is about another character's action or emotion, use that character's correct pronoun ("he", "she") or name. acceptableCriteria must name exact keyword(s) or meaning required.
 - transfer: questions address the learner with "you". targetAnswers start with "I" (learner talks about themselves). acceptableCriteria must specify what type of content counts as correct.
-- reflection: for yes/no questions use "Yes, because [reason]. / No, because [reason]." format; for open-ended questions use "I think..." or "I believe...". acceptableCriteria must specify what evidence or reasoning makes a strong answer for both Yes and No responses.
+- reflection: targetAnswers must match the actual question form at the selected CEFR level. Yes/No questions: "Yes. [short reason]. / No. [short reason]." at lower levels; "Yes, because [reason]. / No, because [reason]." at higher levels. Open-ended questions: use the most natural spoken form for the level (e.g., "We can help others." at A1; "I think we should always try new things." at B1). Do not force "I think..." when a shorter direct answer is more natural at lower levels. acceptableCriteria must specify what evidence or reasoning makes a strong answer for both Yes and No responses.
 - VOCABULARY: Do not exceed CEFR <<CEFR_LEVEL>> in any question or answer. If a concept requires a word above this level, replace it with a simpler synonym at or below <<CEFR_LEVEL>>. Do not keep the harder word just because it is more precise — always prefer the simpler alternative. Example substitutions: "valuable" → "special" or "important"; "terrified" → "very scared"; "exhausted" → "very tired"; "enormous" → "very big". Apply the sentence structure guide above.
 - All questions and answers must be in English. acceptableCriteria must be in Korean.
 - age must be a single specific number (e.g., "10 years old"), never a range or "not specified". If the story does not state the age explicitly, infer it from context and commit to a number.
