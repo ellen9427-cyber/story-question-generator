@@ -1087,3 +1087,444 @@ When rules compete, apply priorities in this order:
 11. Scene diversity (tiebreaker among equally strong candidates)
 12. Lexical variety
 13. Output ordering — sort final selected items by scene number as the last step
+
+---
+
+## Question, Answer, and Evaluation Quality Rules
+
+### 1. Selecting and Formatting Target Words in Acceptable Criteria
+
+When writing `acceptableCriteria` in Korean, select the smallest essential English target word from the model answer.
+
+#### Target Word Selection
+
+* Prefer one essential content word rather than a phrase or complete answer.
+* Use a noun, adjective, or verb that represents the key answer.
+* Do not copy a multiword phrase from the target answer when one word is sufficient.
+* The target word alone does not determine correctness. The learner's full response must also express the correct meaning.
+* Do not accept a response merely because it contains the target word in an incorrect or unrelated statement.
+
+Examples:
+
+Target Answer:
+
+* Your tail turned green.
+
+Target Word:
+
+* green
+
+Acceptable Criteria:
+
+* green을 포함하여 꼬리가 초록색으로 변했다는 내용이 드러나면 정답으로 인정한다.
+
+Target Answer:
+
+* Your feet turned yellow.
+
+Target Word:
+
+* yellow
+
+Acceptable Criteria:
+
+* yellow를 포함하여 발이 노란색으로 변했다는 내용이 드러나면 정답으로 인정한다.
+
+Target Answer:
+
+* You liked red strawberries.
+
+Target Word:
+
+* strawberries
+
+Acceptable Criteria:
+
+* strawberries를 포함하여 Poppy가 좋아하는 음식이 빨간 딸기라는 내용이 드러나면 정답으로 인정한다.
+
+Target Answer:
+
+* You dropped your basket into the river.
+
+Target Word:
+
+* basket
+
+Acceptable Criteria:
+
+* basket을 포함하여 Poppy가 바구니를 강에 떨어뜨렸다는 내용이 드러나면 정답으로 인정한다.
+
+Target Answer:
+
+* You were hungry.
+
+Target Word:
+
+* hungry
+
+Acceptable Criteria:
+
+* hungry를 포함하여 Poppy가 배고팠다는 내용이 드러나면 정답으로 인정한다.
+
+#### Formatting Rules
+
+* Do not place single quotation marks, double quotation marks, or other quotation marks around the English target word.
+* Do not translate the target word into Korean and present both versions as separate required target words.
+* Do not copy the entire target answer or an unnecessarily long phrase into the criteria.
+* Mention the English target word only once.
+* Explain the complete required meaning only once in Korean.
+* Do not repeat the same information in both English and Korean.
+
+Incorrect:
+
+* 'tail turned green' 또는 '꼬리가 초록색으로 변했다'를 포함하여 브로콜리를 먹은 후 Poppy의 꼬리가 초록색으로 변했다는 내용이 드러나면 정답으로 인정한다.
+
+Incorrect:
+
+* tail turned green을 포함하여 Poppy의 꼬리가 초록색으로 변했다는 내용이 드러나면 정답으로 인정한다.
+
+Correct:
+
+* green을 포함하여 브로콜리를 먹은 후 Poppy의 꼬리가 초록색으로 변했다는 내용이 드러나면 정답으로 인정한다.
+
+#### Exception for Pattern Practice
+
+When the learning target is a grammatical pattern rather than story content, the full target structure may be used instead of one word.
+
+Example:
+
+Target Pattern:
+
+* nothing to carry
+
+Acceptable Criteria:
+
+* 발음을 명확하게 하지 않아도 nothing to carry의 구조를 포함해서 말하면 정답으로 인정한다.
+
+Use this exception only for Pattern Practice or when producing the complete structure is the explicit learning objective. For Recall, Inference, Transfer, and Reflection questions, use one essential target word whenever possible.
+
+### 2. Formatting Multiple Target Answers
+
+When there are two or more valid model answers, separate them with a slash.
+
+Use this format:
+
+* Yes, I do. I can learn new things. / No, I do not. I like what I already know.
+* You felt surprised. / You felt excited.
+
+Do not separate multiple answers with commas or periods followed by commas.
+
+Incorrect:
+
+* Yes, I do., No, I do not.
+* You felt surprised., You felt happy.
+
+Correct:
+
+* Yes, I do. / No, I do not.
+* You felt surprised. / You felt happy.
+
+Each answer separated by a slash must be a complete and natural response.
+
+### 3. Evidence-Grounded Recall and Inference Questions
+
+Every Recall and Inference question must have clear support in the story.
+
+Before generating a question, verify all of the following:
+
+1. The related scene contains enough information to answer the question.
+2. The target answer can be explained using the story text, action, situation, or clearly described emotion.
+3. The question does not require the learner to guess an emotion that is not supported by the story.
+4. The question does not present an unsupported feeling as a definite fact.
+5. The acceptable criteria do not include answers that are merely possible but unsupported by the story.
+
+Do not generate a definite emotion question such as:
+
+* How did I feel when my feet turned yellow?
+
+if the story does not state or clearly show Poppy's emotion.
+
+If the question is necessary, use tentative wording:
+
+* How might I have felt when my feet turned yellow?
+
+However, prefer questions with stronger story evidence over speculative questions.
+
+For Inference questions, a reasonable inference must be based on a specific clue in the story. Do not generate an answer merely because it seems possible.
+
+### 4. Natural Meaning and Logical Accuracy
+
+Check the meaning and logic of every question, not only its grammar.
+
+Do not describe a feeling, preference, desire, or uncontrollable event as a `choice`.
+
+Incorrect:
+
+* I did not want to go to the Rainbow Picnic. Was that a good choice?
+
+Not wanting to attend is a feeling or preference, not necessarily a choice.
+
+Better:
+
+* I only ate red strawberries. Was that a good choice?
+
+The action being evaluated must be something the character actually chose to do.
+
+Before using words such as `choice`, `decision`, `action`, or `behavior`, verify that they logically describe the event in the story.
+
+### 5. Reflection Questions Must Require Thinking and Reasons
+
+A Reflection question must ask the learner to:
+
+* evaluate a character's action;
+* explain the result of an action;
+* consider a meaningful alternative;
+* explain the character's change; or
+* identify the lesson of the story.
+
+When a Reflection question asks whether something was good, right, helpful, or wise, add `Why?` or `Why not?`
+
+Weak:
+
+* I took a tiny bite of the banana. Was that a good choice?
+
+Better:
+
+* I took a tiny bite of the banana. Was that a good choice? Why?
+
+The target answer must include both:
+
+1. the learner's judgment; and
+2. a relevant reason.
+
+Example:
+
+Question:
+
+* I only ate red strawberries. Was that a good choice? Why?
+
+Target Answer:
+
+* No, it was not. You missed many tasty foods.
+
+Acceptable Criteria:
+
+* 좋은 선택이 아니었다고 판단하고, 여러 음식을 맛보지 못했거나 새로운 음식을 경험하지 못했다는 이유를 말하면 정답으로 인정한다.
+
+Do not accept only `Yes` or `No` when the question asks for a reason.
+
+### 6. Questions Must Focus on the Story's Central Message
+
+Do not generate a question simply because an event appears in the story.
+
+The event used in a question must contribute to at least one of the following:
+
+* the character's main problem;
+* the character's important action or decision;
+* the character's change;
+* the cause or result of that change;
+* the story's central message.
+
+Avoid questions about minor incidents that do not support the main learning point.
+
+Do not generate:
+
+* Oh no! I dropped my strawberries. What would you do?
+
+This question unnaturally asks the learner what to do about the character's accident, and the accident itself is not the central message of the story.
+
+Prefer questions connected to the character's meaningful change:
+
+* I was afraid to try new food. What could I do?
+* I tried a new food and liked it. What does that teach us?
+
+### 7. Transfer Questions Must Request a Reason When Appropriate
+
+For questions about the learner's opinion, preference, willingness, or personal choice, do not stop at a yes-or-no response when a reason would make the response more meaningful.
+
+Weak:
+
+* Do you like to try new things?
+
+Better:
+
+* Do you like to try new things? Why or why not?
+
+The target answer must provide a complete example for each possible position.
+
+Example:
+
+Question:
+
+* Do you like to try new things? Why or why not?
+
+Target Answer:
+
+* Yes, I do. I can learn new things. / No, I do not. I like what I already know.
+
+Acceptable Criteria:
+
+* Yes로 답한 경우 새로운 것을 시도하면서 배우거나 즐거운 경험을 할 수 있다는 등 긍정적인 이유를 말하면 정답으로 인정한다. No로 답한 경우 익숙한 것을 더 좋아하거나 새로운 것을 시도하기 어려운 이유를 말하면 정답으로 인정한다.
+
+The acceptable criteria must evaluate both branches consistently:
+
+* For `Yes`, require a relevant positive reason or benefit.
+* For `No`, require a relevant reason based on the learner's preference, comfort, concern, or experience.
+* Accept other simple and logically relevant reasons appropriate for the learner's level.
+* Do not require the learner to reproduce the model answer word for word.
+* Do not accept only `Yes` or `No` when the question asks `Why?` or `Why not?`
+
+### 8. Avoid Duplicate Meanings Across Questions
+
+Do not generate two questions that lead to the same central answer, even when the wording or question type is different.
+
+For example, do not include both:
+
+* Why was my tummy making a loud noise?
+* How did I feel before I took a tiny bite of the banana?
+
+if both questions are expected to produce `You were hungry`.
+
+Before finalizing the questions, compare all target answers and remove questions that test the same:
+
+* fact;
+* feeling;
+* reason;
+* action;
+* consequence; or
+* lesson.
+
+Each question must have a distinct learning purpose.
+
+Possible distinctions include:
+
+* the cause of the problem;
+* the character's action;
+* the result of the action;
+* the character's change;
+* the lesson of the story;
+* the learner's own related experience.
+
+`How did I feel? — You were hungry.` is grammatically possible, but do not use it when another question already tests Poppy's hunger or when the story provides stronger evidence for a different question.
+
+### 9. Natural English Meaning Check
+
+After generating every question and target answer, perform a separate meaning check.
+
+Verify that:
+
+* the English expresses the intended meaning naturally;
+* the question and answer form a logical pair;
+* the subject and pronouns are consistent;
+* the tense matches the story event;
+* the answer directly responds to the question;
+* the wording is appropriate for the selected Book Level;
+* a Korean idea has not been translated too literally into unnatural English;
+* the question sounds natural when spoken by the story character;
+* the target answer does not contain unsupported, redundant, or unnecessarily abstract ideas;
+* a state, feeling, action, preference, and choice are not confused with one another.
+
+For lower Book Levels, prefer short, concrete sentences and familiar vocabulary. For higher Book Levels, allow longer explanations and more abstract reasoning when appropriate.
+
+### 10. Asking About the Story's Lesson
+
+A general lesson question is a fallback Reflection question, not a required Reflection question.
+
+First, try to generate Reflection questions about:
+
+* an important action or decision;
+* the reason an action was good or unhelpful;
+* the consequences of an action;
+* a meaningful alternative action;
+* the character's change.
+
+Use a general lesson question only when there are not enough meaningful, non-duplicative Reflection questions grounded in specific story events.
+
+Choose the lesson question according to the Book Level.
+
+For lower Book Levels, use:
+
+* What did you learn from my story?
+
+Example Target Answer:
+
+* I learned that trying new things can be fun.
+
+For higher Book Levels, the following question may be used:
+
+* What is the most important lesson in the story?
+
+Example Target Answer:
+
+* The most important lesson is that trying new things can lead to positive experiences.
+
+Do not use:
+
+* What can we learn from my story?
+
+Because the character is asking the learner to express the learner's own understanding, `you` is more natural than `we`.
+
+Additional rules:
+
+* Generate no more than one general lesson question.
+* Do not generate both lesson-question forms in the same question set.
+* Do not use a lesson question merely to fill the required number of Reflection items.
+* Do not use a general lesson question when a more specific and meaningful scene-based Reflection question is available.
+* Make sure the target answer states a lesson that is clearly supported by the character's experience and change.
+* Adjust the vocabulary, sentence length, and level of abstraction to the selected Book Level.
+
+Example for a lower Book Level:
+
+Question:
+
+* What did you learn from my story?
+
+Target Answer:
+
+* I learned that trying new things can be fun.
+
+Acceptable Criteria:
+
+* 새로운 것을 시도하면 즐거운 경험을 하거나 새로운 것을 발견할 수 있다는 이야기의 교훈을 말하면 정답으로 인정한다.
+
+Example for a higher Book Level:
+
+Question:
+
+* What is the most important lesson in the story?
+
+Target Answer:
+
+* The most important lesson is that trying new things can lead to positive experiences.
+
+Acceptable Criteria:
+
+* 새로운 것을 시도하는 것이 새로운 발견이나 긍정적인 경험으로 이어질 수 있다는 핵심 교훈을 말하면 정답으로 인정한다.
+
+### 11. Final Quality-Control Check
+
+Before returning the final output, review all questions as one complete set and confirm that:
+
+1. Each `acceptableCriteria` uses the smallest essential English target word whenever possible.
+2. A phrase is used as the target only when the complete grammatical structure is the learning objective.
+3. No English target word or structure is enclosed in quotation marks.
+4. English target words are not unnecessarily translated and repeated as Korean target words.
+5. The English target word is mentioned only once.
+6. Multiple target answers are separated with a slash.
+7. Each answer separated by a slash is complete and natural.
+8. Every Recall and Inference answer has sufficient story evidence.
+9. No unsupported emotion is presented as a definite fact.
+10. Every evaluated action is an actual action or choice.
+11. Every evaluative or opinion question asks for a reason when appropriate.
+12. Every target answer includes the reason requested by the question.
+13. The acceptable criteria require the same essential information as the question and target answer.
+14. Yes and No responses are evaluated according to consistent standards.
+15. No two questions test the same meaning or produce substantially the same answer.
+16. Every Reflection question is connected to the character's change or the central message.
+17. Every question focuses on a meaningful story event rather than an incidental detail.
+18. Every sentence is grammatically correct, logically natural, and appropriate for the selected Book Level.
+19. A general lesson question is used only when there are not enough meaningful, non-duplicative, scene-based Reflection questions.
+20. If a lesson question is used, it matches the Book Level.
+21. No more than one general lesson question is generated.
+22. `What did you learn from my story?` and `What is the most important lesson in the story?` do not appear together.
+23. No question is included merely to fill the required number of items.
