@@ -298,7 +298,24 @@ Valid JSON only."""
     return json.loads(raw)["openingLine"]
 
 
-def build_excel(result, story_analysis, alt_texts):
+def build_excel(result, story_analysis, alt_texts, closing_line=""):
+    # Persona sheet (Field / Value)
+    persona = result.get("characterPersona", {})
+    opening = persona.get("openingLine", "")
+    if isinstance(opening, list):
+        opening = " ".join(opening)
+    patterns_value = "\n".join(result.get("patterns", []))
+    persona_rows = [
+        {"Field": "Age",          "Value": persona.get("age", "")},
+        {"Field": "Gender",       "Value": persona.get("gender", "")},
+        {"Field": "Personality",  "Value": persona.get("personality", "")},
+        {"Field": "Core Message", "Value": persona.get("coreMessage", "")},
+        {"Field": "Opening Line", "Value": opening},
+        {"Field": "Closing Line", "Value": closing_line},
+        {"Field": "Patterns",     "Value": patterns_value},
+    ]
+    df_persona = pd.DataFrame(persona_rows)
+
     # Questions sheet
     rows = []
     for type_key, type_label in QUESTION_TYPES:
@@ -315,33 +332,33 @@ def build_excel(result, story_analysis, alt_texts):
             })
     df_q = pd.DataFrame(rows, columns=["Type", "Question", "Target Answer", "Related Scene", "Alt Text", "Acceptable Criteria"])
 
-    # Story Info sheet
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        df_persona.to_excel(writer, index=False, sheet_name="Persona")
+        df_q.to_excel(writer, index=False, sheet_name="Questions")
+    return buf.getvalue()
+
+
+def build_json_export(result, closing_line=""):
+    """Return a clean export dict: characterPersona (with patterns + closingLine) + questions only."""
     persona = result.get("characterPersona", {})
-    elements = story_analysis.get("storyElements", {})
     opening = persona.get("openingLine", "")
     if isinstance(opening, list):
         opening = " ".join(opening)
-    info_rows = [
-        {"Field": "Summary", "Value": story_analysis.get("summary", "")},
-        {"Field": "Characters", "Value": elements.get("characters", "")},
-        {"Field": "Setting", "Value": elements.get("setting", "")},
-        {"Field": "Conflict", "Value": elements.get("conflict", "")},
-        {"Field": "Resolution", "Value": elements.get("resolution", "")},
-        {"Field": "Moral", "Value": elements.get("moral", "")},
-        {"Field": "Core Message", "Value": persona.get("coreMessage", "")},
-        {"Field": "Opening Line", "Value": opening},
-    ]
-    df_info = pd.DataFrame(info_rows)
-
-    # Patterns sheet
-    df_patterns = pd.DataFrame({"Pattern": result.get("patterns", [])})
-
-    buf = io.BytesIO()
-    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-        df_q.to_excel(writer, index=False, sheet_name="Questions")
-        df_info.to_excel(writer, index=False, sheet_name="Story Info")
-        df_patterns.to_excel(writer, index=False, sheet_name="Patterns")
-    return buf.getvalue()
+    export_persona = {
+        "name":        persona.get("name", ""),
+        "age":         persona.get("age", ""),
+        "gender":      persona.get("gender", ""),
+        "personality": persona.get("personality", ""),
+        "coreMessage": persona.get("coreMessage", ""),
+        "openingLine": opening,
+        "closingLine": closing_line,
+        "patterns":    result.get("patterns", []),
+    }
+    return {
+        "characterPersona": export_persona,
+        "questions":        result.get("questions", {}),
+    }
 
 
 def render_question(q, idx, question_type, api_key, api_provider, story_text, alt_texts, cefr_level="B1"):
@@ -650,11 +667,12 @@ if "result" in st.session_state:
             for p in patterns_list:
                 st.markdown(f"- {p}")
 
+    _closing_line = st.session_state.get("closing_line", "")
     dl_col1, dl_col2 = st.columns(2)
     with dl_col1:
         st.download_button(
             "Excel 다운로드",
-            data=build_excel(result, story_analysis, alt_texts),
+            data=build_excel(result, story_analysis, alt_texts, closing_line=_closing_line),
             file_name="questions.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True,
@@ -662,7 +680,7 @@ if "result" in st.session_state:
     with dl_col2:
         st.download_button(
             "JSON 다운로드",
-            data=json.dumps(result, ensure_ascii=False, indent=2),
+            data=json.dumps(build_json_export(result, closing_line=_closing_line), ensure_ascii=False, indent=2),
             file_name="result.json",
             mime="application/json",
             use_container_width=True,
