@@ -154,6 +154,13 @@ Use Level C when more scene variety is needed, but keep it lower priority than A
 4. Lexical variety
 5. Additional scene coverage
 
+#### Final Check
+
+- Are items spread across different scenes when possible?
+- Did I look beyond the scene containing the exact target phrase?
+- If the sentence is inferred, is the inference reasonable?
+- Am I avoiding both extremes?
+
 **Priority order: Story accuracy → Natural pattern use → Learner appropriateness → Scene diversity → Lexical variety**
 
 ---
@@ -172,44 +179,7 @@ Requirements:
 Would a learner who has not read the story still be able to answer this easily?
 If yes, replace the question.
 
-Do not generate questions answerable by common sense, general world knowledge, or obvious object properties.
-
----
-
-### POV Hard Rule
-
-This is a mandatory rule, not a preference.
-
-Recall and Inference questions about the Speaking Main Character must use first-person perspective. Using the character's name or third-person pronouns for the Speaking Main Character is a generation error that must be caught and corrected before output.
-
-**Correct — Speaking Main Character:**
-- What did I lose?
-- Why was I hungry?
-- What did I drop into the river?
-- What is my favorite food?
-- At first, what did I ask the son to give me?
-
-**Incorrect — must be rewritten:**
-- What did Poppy lose? → What did I lose?
-- Why was Milo sad? → Why was I sad?
-- What is Poppy's favorite food? → What is my favorite food?
-
-**Questions about other characters use their correct pronoun or name:**
-- What did Toby open? → He opened the robot arms. ✓
-- What did the youngest son get? → He got a cat. ✓
-- What does Chef Pip do every year? ✓
-
----
-
-### POV Final Rewrite Check
-
-Before finalizing any Recall or Inference question, scan it for:
-- the Speaking Main Character's name used as the subject or possessive
-- "he", "she", "his", "her", "him" referring to the Speaking Main Character
-
-If any of these appear and they refer to the Speaking Main Character, rewrite the question using "I", "me", or "my" before proceeding.
-
-This check runs on every Recall and Inference question — not just on ones you suspect are wrong.
+Do not generate questions answerable by common sense, general world knowledge, or obvious object properties (e.g., "What color are bananas?" or "How many legs does a rabbit have?").
 
 ---
 
@@ -219,34 +189,23 @@ Generate **5 questions**.
 
 Inference questions require the learner to interpret **an unstated reason, emotion, relationship, change, or conclusion** by using the story's context — not to recall a directly stated fact.
 
-Keep Inference questions appropriately simple for young EFL learners. Inference does not require literary analysis. The typical Inference question asks the learner to interpret one reason, one feeling, or one causal connection from nearby evidence.
-
 Requirements:
 - The answer must not be a single explicit statement taken directly from the story. The learner must interpret, not simply recall.
-- A single scene can support a strong Inference question. Do not require connections across multiple scenes.
+- A single scene can support a strong Inference question. Do not require connections across multiple scenes as a condition.
 - Do not reject an Inference question only because the relevant evidence appears nearby in the text. What matters is whether the learner must interpret meaning rather than repeat a statement.
 - Questions about the Speaking Main Character must use I / me / my.
 
-Good Inference question forms:
-- Why did I ___? / Why was I ___?
-- How did I feel when ___?
-- Why did [other character] ___?
+Inference questions should be appropriately simple for young EFL learners:
+- Why did I...? / Why was I...?
+- How did I feel when...?
+- Why did [other character]...?
 - How did [other character] feel?
-- What might [subject] do next?
 
 Avoid Inference questions where the reason or answer is so explicitly and immediately signaled by the surrounding text that almost no interpretation is required.
 
 **Good example — allow:**
 **Why was I sad in the morning?**
-→ The learner must connect Milo's loss of colors to his emotional state.
-
-**Good example — allow:**
-**Why did I look through a hole?**
-→ Pip heard a voice; the learner connects the sound to the action.
-
-**Good example — allow:**
-**Why was the fish's lamp fading?**
-→ The learner must connect the plastic bag covering the fish's head to the dimming lamp.
+→ Milo lost his colors. The learner must connect this event to his emotional state.
 
 **Avoid:**
 **Why did I take a tiny bite of the yellow banana?**
@@ -280,39 +239,18 @@ Example:
 "What do you usually do with your friends?" is reasonable for Pip (friendship is central).
 The same question is not appropriate for Poppy (friendship is incidental — the story is about trying new food).
 
-### Transfer — Proto-Validated Examples by Story
+### Poppy — Transfer Example
 
-These are examples of good Transfer questions from the reviewed proto set.
+Good (connected to Transfer Anchors):
+- What new food do you want to try?
+- Do you like trying new food?
+- What do you do when you see a new food?
+- Have you tried a food you did not like before?
 
-**Cat** (Transfer Anchors: cleverness, planning, helping)
-- The Cat is good at making plans. What are you good at?
-- Tell me about a time you helped a friend. What did you do?
-
-**Didi** (Transfer Anchors: letting things be free, learning from mistakes, honest friendship)
-- You really want something, but it is not yours. What do you do?
-- Your friend gives you advice, but you think differently. What do you do?
-
-**Hans** (Transfer Anchors: careful decisions, knowing what you need, freedom vs. possessions)
-- What can you do before you decide too quickly?
-- How can you know what you really need?
-- What makes you feel free and happy?
-
-**Kira** (Transfer Anchors: protecting the ocean, taking action to help)
-- What can you do to help keep the sea clean?
-- What can you do when an animal needs help?
-- How do you feel when you help someone?
-
-**Milo** (Transfer Anchors: accepting yourself, valuing differences, what makes you special)
-- What makes you special?
-- What is different about you and your friends?
-- What do you think your color is? Why?
-
-**Pip** (Transfer Anchors: friendship, growing and changing, doing new things)
-- How do you make new friends?
-- Is there something you couldn't do before, but you can do now?
-- You can do something new. How do you feel?
-
-Note: Some questions in the proto set that were labeled Reflection are now classified as Transfer under current policy (e.g., "Have you ever wanted something your friend had?" and "Have you ever believed what others say easily?"). These are Transfer questions because they ask about the learner's real personal experience.
+Bad (surface detail — not connected to core conflict or change):
+- What is your favorite animal?
+- What do you like to do with your friends?
+- What is your favorite color?
 
 ---
 
@@ -358,29 +296,41 @@ Avoid vague questions:
 Do not classify learner personal experience questions as Reflection — those belong in Transfer.
 Example: "Have you ever wanted something your friend had?" → Transfer, not Reflection.
 
-### Reflection — Proto-Validated Examples by Type
+---
 
-**Type 1 — Same Situation**
-- If you were me, would you let the cloud go? (Didi)
-- If you were me, what would you do to help the son? (Cat)
-- If you were me and could fly, what would you do first? (Pip)
-- If you had a pet like me, what would you ask it to do? (Cat)
-- If you were me, which trade would you not make? (Hans)
+## POV Hard Rule
 
-**Type 2 — Evaluate the Character**
-- Do you think I was right to lie to help my master? Why or why not? (Cat)
-- Do you think the King trusted me too quickly? Why or why not? (Cat)
-- Do you think I was right to catch the cloud? (Didi)
-- Was I right to help the fish right away? Why? (Kira)
-- Do you think I was special when I was gray? Why or why not? (Milo)
-- Do you think I was really lucky? Why or why not? (Hans)
+This is a mandatory rule, not a preference.
 
-**Type 3 — Story Lesson**
-- What can we learn from the Giant's mistake? (Cat)
-- What is the most important lesson in this story? (Kira / Didi)
-- Are mistakes always bad? (Didi)
-- Is change good or bad? Why? (Pip)
-- What can we learn? (Milo — simplified form for lower levels)
+Recall and Inference questions about the Speaking Main Character must use first-person perspective. Using the character's name or third-person pronouns for the Speaking Main Character is a generation error that must be caught and corrected before output.
+
+**Correct:**
+- What did I lose?
+- Why was I hungry?
+- What did I drop into the river?
+- What is my favorite food?
+
+**Incorrect — must be rewritten:**
+- What did Poppy lose? → What did I lose?
+- Why was Poppy hungry? → Why was I hungry?
+- What did Poppy drop into the river? → What did I drop into the river?
+- What is Poppy's favorite food? → What is my favorite food?
+
+Questions about other characters (not the Speaking Main Character) use that character's name or correct pronoun:
+- What does Chef Pip do every year? ✓
+- What did Chef Pip bring me? ✓
+
+---
+
+## POV Final Rewrite Check
+
+Before finalizing any Recall or Inference question, scan it for:
+- the Speaking Main Character's name used as the subject or possessive
+- "he", "she", "his", "her", "him" referring to the Speaking Main Character
+
+If any of these appear and they refer to the Speaking Main Character, rewrite the question using "I", "me", or "my" before proceeding.
+
+This check runs on every Recall and Inference question — not just on ones you suspect are wrong.
 
 ---
 
@@ -402,89 +352,65 @@ Exception: Pattern Practice, where the learner is asked to repeat or produce an 
 
 ## Examples of Well-Designed Questions by Type
 
-The following examples are drawn from proto-validated question sets across six stories: Cat, Didi, Hans, Kira, Milo, and Pip.
+The following examples are based on the story of **Milo**, who loses his colors, looks for them in the forest, meets colorful animals and objects, and eventually discovers his own colors again.
 
 ### Recall
 
-Recall questions ask about information directly stated or clearly shown in the story. The learner only needs to remember a fact.
+Ask about information directly stated or clearly shown in the story. The learner only needs to remember a fact.
 
-Questions about the Speaking Main Character use "I". Questions about other characters use their name or pronoun.
-
-Good examples — Speaking Main Character perspective:
-- **What color was I in the morning?** (Milo) → Gray. / You were gray.
-- **At first, what did I ask the son to give me?** (Cat) → A bag and a pair of boots. / You asked him to give you a bag and a pair of boots.
-- **What did I make before I went to sleep?** (Pip) → A hard little house. / You made a hard little house.
-- **What did I get after working for seven years?** (Hans) → A big piece of gold. / You got a big piece of gold.
-- **What did I find in the dark water?** (Kira) → A tiny golden light. / A golden light.
-
-Good examples — Other characters:
-- **What did Toby open?** (Kira) → He opened the submarine's robot arms. / The robot arms.
-- **What did the youngest son get from his father?** (Cat) → He got a cat. / He got you.
-- **What covered the anglerfish's head?** (Kira) → A plastic bag. / A plastic bag covered her head.
+Good examples:
+- **What color was I in the morning?** → Gray.
+- **What did I see first in the forest?** → A yellow butterfly.
+- **What did I see in the water?** → Many colors.
 
 ### Inference
 
-Inference questions require the learner to interpret a reason, feeling, or conclusion that is not directly stated. Keep them short and simple.
+Require the learner to interpret a reason, emotion, relationship, or conclusion not directly stated.
 
 Good examples:
-- **Why was I sad in the morning?** (Milo) → Because you were gray. / Because you lost your color.
-- **Why did I look through a hole?** (Pip) → Because you heard a voice. / Because you wanted to see who was there.
-- **Why did I make a hard little house?** (Pip) → Because you felt sleepy and needed a place to rest.
-- **Why was the fish's lamp fading?** (Kira) → The thick plastic bag covered her head.
-- **How did the fish show that she was thankful?** (Kira) → She wiggled her fins. / She wiggled her fins and looked at the submarine.
-- **Why did I want to trade my gold for the horse?** (Hans) → Because it was heavy.
-- **The boy told me about the lost pig. How did I feel?** (Hans) → You felt scared. / You felt afraid.
+- **Why was I sad in the morning?** → You lost your colors.
+- **Why did I stop asking others for their colors?** → You learned that their colors were important to them.
+- **How did seeing many colors in the water change me?** → You began to feel better.
 
-Note: All of these involve one clear interpretive step from visible context to unstated meaning. None require elaborate multi-scene analysis.
+Note: "Why was I sad in the morning?" is valid Inference — the learner must connect the loss of colors to the emotion of sadness, even though the evidence is nearby.
+
+Avoid questions where the answer is so explicitly and immediately signaled that almost no interpretation is needed.
 
 ### Transfer
 
-Transfer questions connect a Transfer Anchor to the learner's real life. See the Transfer section above for full examples by story.
+Connect a central story idea to the learner's real life, traceable to a Transfer Anchor.
 
-Key style points:
-- The question connects to the story's CENTRAL conflict or lesson — not to an incidental noun.
-- Wording is natural and direct: "What can you do...?", "How do you feel when...?", "Tell me about a time you..."
-- The question assumes a real personal response — not a hypothetical story scenario.
+Milo's Transfer Anchors: accepting what makes you special, valuing differences, losing something and finding it again.
+
+Good examples:
+- **What makes you special?** → I am good at drawing.
+- **What is different about you and your friends?** → I like drawing, but my friend likes singing.
+
+Bad examples (surface detail — not connected to Milo's central theme):
+- "What color do you like?" — colors in Milo are a metaphor, not the topic of Transfer.
+- "Have you seen a butterfly?" — a butterfly is incidental.
 
 ### Reflection
 
-Reflection questions must match one of three defined types. Wording adapts to CEFR level.
+Questions must belong to one of three types. Wording adapts to CEFR level.
 
-**Type 1 — Same Situation:**
-B1 form: "If you were me, would you let the cloud go?" (Didi)
-A1 simplified form of same intent: "Would you let it go?" or "What would you do?"
+**Type 1 — Same Situation (level examples)**
 
-**Type 2 — Evaluate the Character:**
-B1 form: "Do you think I was right to lie to help my master? Why or why not?" (Cat)
-A1 simplified form: "Was I right to lie for my master?"
+Pre-A1/A1: Would you look for your colors too?
+A2: What would you do if you lost your colors?
+B1+: If you were me, would you look for your lost colors? Why?
 
-**Type 3 — Story Lesson:**
-B1 form: "What is the most important lesson in this story?" (Kira)
-A1 simplified form: "What can we learn?"
+**Type 2 — Evaluate the Character (level examples)**
 
-### Target Answer Format
+Pre-A1/A1: Was I right to ask others for their colors?
+A2: Was it a good choice to ask others for their colors? Why?
+B1+: Do you think it was a good idea to ask others for their colors? Why or why not?
 
-The standard Target Answer provides two alternatives separated by " / ":
-- A short noun-phrase or adjective answer (when natural)
-- A full sentence with the correct grammatical person
+**Type 3 — Story Lesson (level examples)**
 
-Examples:
-- Recall: "Gray. / You were gray."
-- Recall: "A rabbit. / You brought a rabbit."
-- Recall: "A big piece of gold. / You got a big piece of gold."
-- Inference: "Because you were gray. / Because you lost your color."
-- Inference: "She wiggled her fins. / She wiggled her fins and looked at the submarine."
-- Reflection (Yes/No): provide at least one Yes answer and one No answer
-
-Keep Target Answers level-appropriate. Do not write a long B1-level explanation for an A1 question.
-
-A1 Recall:
-- Good: "Gray. / You were gray."
-- Avoid: "The chameleon had completely lost all of his colorful pigmentation, resulting in a gray appearance."
-
-A1 Reflection:
-- Good: "Yes. The fish needed help."
-- Avoid: "Yes, because helping the fish was the right decision in that difficult situation."
+Pre-A1/A1: What can we learn?
+A2: What is the lesson in this story?
+B1+: What can we learn from my story?
 
 ### Important: Classify by thinking required, not by question wording
 
@@ -492,12 +418,10 @@ A1 Reflection:
 |------|---------|------------------|
 | Recall | What color was I in the morning? | Remember a fact |
 | Inference | Why was I sad in the morning? | Interpret meaning from context |
-| Transfer | What makes you special? | Connect story anchor to own experience |
-| Reflection — Situation | Would you let the cloud go? | Imagine making a decision as the character |
-| Reflection — Evaluation | Was I right to help the fish right away? | Judge the character's behavior |
-| Reflection — Lesson | What can we learn from the Giant's mistake? | Reflect on the overall message |
-
-Note: Questions about the learner's personal experience ("Have you ever wanted something your friend had?") are Transfer, not Reflection, even if they relate to a story theme.
+| Transfer | What makes you special? | Connect story to own experience |
+| Reflection — Situation | Would you look for your colors too? | Imagine making a decision as the character |
+| Reflection — Evaluation | Was I right to ask others for their colors? | Judge the character's behavior |
+| Reflection — Lesson | What can we learn? | Reflect on the overall message |
 
 ---
 
@@ -549,7 +473,9 @@ Forbidden:
 - Reported speech
 - Conditional sentences
 - Subjunctive mood
-- Cleft sentences / Inversion / Parenthetical clauses
+- Cleft sentences
+- Inversion
+- Parenthetical clauses
 
 ---
 
@@ -656,7 +582,7 @@ Use:
 - Short Yes/No questions
 
 Avoid:
-- "Do you think + full clause" (too complex for spoken processing at A1)
+- "Do you think + full clause" (too complex to process in spoken form)
 - Long infinitive constructions
 - Embedded clauses or nested questions
 - Long conditional structures ("If you were..., would you...?")
@@ -683,8 +609,8 @@ Use:
 
 Good:
 - Why did I feel better after I tried it?
+- How did I feel when I saw the new food?
 - What do you do when you try something new?
-- Was it a good choice? Why?
 
 Avoid:
 - Multiple clauses in one question
@@ -706,19 +632,30 @@ Do not add complexity simply because B1 allows it.
 
 ### B2 or Higher
 
-Use richer but conversational sentences. Still easy to say aloud — no academic-test style, no literary wording, no unnecessary embedded clauses.
+Use:
+- Richer but conversational sentences
+- More flexible grammar and broader vocabulary
+
+However:
+- Still easy to say aloud
+- No academic-test style or literary wording
+- Avoid unnecessary embedded clauses
+- Prioritize clear spoken English
 
 ---
 
 ## Level-Specific Question Frames
 
-These frames show natural question syntax for each level. They are examples — use the frame that fits the story content naturally.
+These frames show natural question syntax for each level. They are not formulas — use the frame that fits the story content. Do not use a frame if it does not fit naturally.
 
 ### Recall
 
 Pre-A1/A1:
-- What did I ___? / Who did I ___? / Where did I ___?
-- What was ___? / What color was ___?
+- What did I ___?
+- Who did I ___?
+- Where did I ___?
+- What was ___?
+- What color was ___?
 - What did ___ do?
 
 A2–B1+:
@@ -728,25 +665,28 @@ A2–B1+:
 ### Inference
 
 Pre-A1/A1:
-- Why did I ___? / Why was I ___?
-- How did I feel? / How did ___ feel?
+- Why did I ___?
+- Why was I ___?
+- How did I feel?
+- How did ___ feel?
 
 A2–B1+:
 - Why do you think I ___?
 - How did I feel when ___?
-- What might ___ do next?
+- What does it tell us about ___?
 
 ### Transfer
 
 Pre-A1/A1:
-- What ___ do you like? / Do you like ___?
+- What ___ do you like?
+- Do you like ___?
 - What new ___ do you want to try?
 - How do you feel when ___?
 
 A2–B1+:
 - What do you do when ___?
 - Have you ever ___?
-- Tell me about a time you ___. What did you do?
+- How can you ___?
 
 All Transfer questions must connect to a Transfer Anchor.
 
@@ -775,10 +715,24 @@ Do not automatically split a sentence into multiple short sentences simply becau
 
 Use a short compound or complex sentence when it expresses the relationship between ideas more naturally. Familiar connectors (and, but, because, so, when) may be used when appropriate for the level.
 
+### Preserve Meaningful Relationships
+
 Avoid: **Poppy is hungry. He has nothing to eat.**
 Prefer: **Poppy is hungry because he has nothing to eat.**
 
+### Do Not Equate "Easy" with "Fragmented"
+
 Sentence simplicity comes from familiar vocabulary, clear word order, limited length, and easy-to-follow meaning — not from removing conjunctions between related ideas.
+
+### Decision Rule
+
+Before splitting a sentence, check:
+- Does combining the ideas make the meaning clearer?
+- Is the connector familiar and appropriate for the selected level?
+- Would splitting make the English sound choppy?
+- Can the connected sentence be easily understood by a young EFL learner?
+
+If yes, keep the ideas connected.
 
 **Priority order: Natural meaning → Clear relationship between ideas → User-selected level → Young learner comprehensibility → Sentence simplicity**
 
@@ -815,10 +769,17 @@ Avoid:
 - **What color is broccoli?**
 - **How many legs does the rabbit have?**
 
-Instead, ask about story-specific information: what a character did, what happened, what object a character had, what changed.
+Instead, ask about story-specific information: what a character did, what happened before/after an event, what object a character had, where a character went, what changed.
+
+**Better examples:**
+- What food did I try first? → You tried a yellow banana.
+- What happened to my feet after I ate the banana? → They turned yellow.
+- What did I drop into the river? → Your basket of strawberries.
 
 **Recall quality check:**
-Would a learner who has never read the story still be able to answer this easily?
+- Would a learner who has never read the story still be able to answer this easily?
+- Is the answer obvious from common knowledge?
+
 If yes, replace the question.
 
 ---
@@ -829,6 +790,10 @@ If yes, replace the question.
 - Do not repeatedly use the same scene simply because it contains many easy candidates.
 - When several scenes support equally good questions, choose scenes not already used.
 - Scene diversity is a preference when candidates are of equal quality — do not sacrifice a stronger question to achieve coverage from an additional scene.
+
+**Scene distribution check:**
+- Are too many questions based on the same scene?
+- Does the full question set represent the story from beginning to end?
 
 ---
 
@@ -891,7 +856,7 @@ Target Answers must:
 - Use the correct pronoun
 - Avoid extra explanation not required by the question
 
-**A1 — Target Answer Examples**
+### A1 — Target Answer Examples
 
 Q: Why was I sad?
 Good: Because you lost your color.
@@ -901,7 +866,7 @@ Q: Was I right to help the fish?
 Good: Yes. The fish needed help.
 Avoid: Yes, because helping the fish was the right decision in that difficult situation.
 
-Do not give a B1-length explanation in response to an A1 question.
+Do not give a B1-length explanation in response to an A1 question. Match the answer length and structure to the question level.
 
 ---
 
@@ -943,44 +908,40 @@ Do not require word-for-word reproduction of the Target Answer. Evaluate **meani
 
 1. Do not require an exact match. Accept semantically equivalent answers with different wording.
 2. Identify the minimum essential information required. Do not require unnecessary details.
-3. Write in Korean. Do not generate generic criteria such as "Any reasonable answer is acceptable" or "학생이 이유를 말하면 정답으로 인정한다."
-4. Judge meaning, not grammar. Minor errors that do not change meaning should not disqualify an answer.
-5. Allow multiple natural expressions for the same meaning.
+3. Write in Korean using clear statements such as:
+   - `~라는 내용이 드러나면 정답으로 인정한다.`
+   - `~를 포함하여 ~라는 의미가 되면 정답으로 인정한다.`
+   - `~에 대한 구체적인 내용을 한 가지 이상 말하면 정답으로 인정한다.`
+4. Judge meaning, not grammar. Minor errors (articles, tense, word order) that do not change meaning should not disqualify an answer.
+5. Do not generate generic criteria. Avoid: "Any reasonable answer is acceptable" / "학생이 이유를 말하면 정답으로 인정한다."
+6. Allow multiple natural expressions for the same meaning.
 
-### Standard Korean Criteria Patterns (from proto)
+### Criteria by Question Type
 
-**Pattern Practice:**
-`발음을 명확하게 하지 않아도 [패턴 구조]를 포함해서 말하면 정답으로 인정한다.`
+**Pattern Practice** — Target the grammatical frame, not perfect pronunciation.
+Example: `발음을 명확하게 하지 않아도 nothing to + verb의 구조로 말하면 정답으로 인정한다.`
 
-**Recall — single fact:**
-`[keyword]를 포함해서 [사실]라는 내용이 드러나면 정답으로 인정한다.`
-Example: `gray를 포함해서 Milo의 색깔이 회색이 되었다는 내용이 되면 정답으로 인정한다.`
+**Recall** — Specify the essential story fact or keyword.
+Examples:
+- `gray를 포함해서 Milo의 색깔이 회색이 되었다는 내용이 되면 정답으로 인정한다.`
+- `butterfly를 포함해서 Milo가 나비를 봤다는 내용이 드러나면 정답으로 인정한다.`
 
-**Recall — two required facts:**
-`[item A]와 [item B]를 모두 언급하면 정답으로 인정한다.`
-Example: `가방(a bag)과 장화 한 켤레(a pair of boots)를 달라고 했다는 두 가지 내용을 모두 언급하면 정답으로 인정한다.`
+**Inference** — Specify the inferred meaning or causal relationship. Accept different wording for the same valid inference.
+Examples:
+- `Milo의 색깔이 회색으로 변했거나 자신의 색깔을 잃었기 때문이라는 내용이 드러나면 정답으로 인정한다.`
 
-**Inference — causal:**
-`[원인 A] 또는 [원인 B]라는 내용이 드러나면 정답으로 인정한다.`
-Example: `Milo의 색깔이 회색으로 변했거나 자신의 색깔을 잃었기 때문이라는 내용이 드러나면 정답으로 인정한다.`
+**Transfer** — Accept any personal answer that connects to the Transfer Anchor and is concrete enough to communicate the learner's idea.
+Examples:
+- `학생이 직접 먹어 보고 싶은 음식을 한 가지 이상 구체적으로 말하면 정답으로 인정한다.`
+- `자신의 외모, 성격, 능력 등에서 특별하다고 생각하는 점을 한 가지 이상 말하면 정답으로 인정한다.`
 
-**Inference — emotion:**
-`[감정 A], [감정 B] 등 [상황에 어울리는 감정]을 말하면 정답으로 인정한다.`
-Example: `scared나 afraid와 같은 단어를 포함하여 두려워했다는 내용으로 대답하면 정답으로 인정한다.`
-
-**Transfer:**
-`[연결된 전이 주제]에 대한 구체적인 내용을 한 가지 이상 말하면 정답으로 인정한다.`
-Example: `자신이 잘하는 일이나 능력을 한 가지 구체적으로 말하면 정답으로 인정한다.`
-
-**Reflection — Yes/No:**
-`Yes로 답한 경우 [이유 A] 또는 유사한 내용을 근거로 들면 정답으로 인정한다. No로 답한 경우 [이유 B] 또는 유사한 내용을 근거로 들면 정답으로 인정한다. 이외에도 자신의 의견과 논리적으로 연결되는 합리적인 근거를 제시하면 정답으로 인정한다.`
-
-**Reflection — open-ended lesson:**
-`이야기의 교훈을 한 가지 이상 구체적으로 말하면 정답으로 인정한다.`
+**Reflection** — Multiple reasonable answers are expected. Cover both Yes and No when applicable.
+Example (Yes/No):
+`Yes로 답한 경우 [이유 A] 또는 유사한 내용을 근거로 들면 정답으로 인정한다. No로 답한 경우 [이유 B] 또는 유사한 내용을 근거로 들면 정답으로 인정한다.`
 
 ### Target Answer vs. Acceptable Criteria
 
-**Target Answer** — A natural example of a strong learner response (typically 2 alternatives separated by " / ").
+**Target Answer** — A natural example of a strong learner response.
 **Acceptable Criteria** — The minimum semantic condition. Must generalize the Target Answer into a meaning-based evaluation rule, not translate it into Korean.
 
 ---
