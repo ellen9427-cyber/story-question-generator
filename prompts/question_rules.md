@@ -64,6 +64,67 @@ Story accuracy → Chronological scene order → Natural meaning → Target patt
 - Is it age-appropriate for young EFL learners?
 - Am I creating unnecessary variation unsupported by the story?
 
+---
+
+### Pattern Practice: Story-Grounded Expansion and Scene Diversity
+
+Do not limit generation only to scenes where the exact target expression appears explicitly. The goal is to create **natural, meaningful practice sentences using the target pattern across different story scenes**, while remaining grounded in the story.
+
+#### Levels of Story Support
+
+**Level A — Directly Supported (strongest, most preferred)**
+The sentence directly describes information explicitly stated in the story.
+Example: `Poppy is hungry because he has nothing to eat.` (SC06 explicitly shows this)
+
+**Level B — Clearly Supported by Story Context**
+The exact sentence is not written in the story, but it naturally expresses a cause, consequence, action, or situation that clearly follows from the story. Use freely to distribute practice across different scenes.
+Examples:
+- `After Poppy drops his basket, he has nothing to eat.` (SC05)
+- `Poppy follows the yummy smell because he has nothing to eat.` (SC07)
+
+**Level C — Reasonable Contextual Extension (lower priority)**
+Not directly stated but a reasonable, natural interpretation of the scene that does not invent a new event or contradict the story.
+Examples:
+- `After losing his basket, Poppy has nothing to carry.` (SC05 — implied from losing the basket)
+- `Poppy has nothing to lose, so he takes a tiny bite.` (SC11 — inferred from his decision)
+- `Poppy has nothing to fear about trying colorful food now.` (SC16 — reasonable interpretation of his change)
+
+Use Level C when more scene variety is needed, but keep it lower priority than A and B.
+
+#### Key Rules
+
+**Pattern Practice is not Recall.** The generated sentence does not need to appear verbatim in the story. It is acceptable to restate an event, express a consequence, connect a cause and result, describe an implied situation, or slightly extend the scene when the meaning remains clearly connected.
+
+**Allow natural verb variation.** When the target pattern has a replaceable slot, different verbs may be used if natural and reasonably story-supported. For `nothing to + verb`: `nothing to eat`, `nothing to taste`, `nothing to carry`, `nothing to lose`, `nothing to fear` are all acceptable if grounded in the scene. Do not require all items to use a different verb, but do not restrict all to the same verb when variety is natural.
+
+**Prioritize scene diversity.** First search the entire story for scenes where the pattern can be directly used, naturally restated, or reasonably inferred. Do not generate all items from the single scene where the target phrase appears explicitly.
+
+**Do not force equal distribution.** Scene diversity is a preference, not an absolute requirement. If only three scenes support strong sentences, use those three rather than inventing weak examples from five scenes.
+
+**Evaluate naturalness and learner level.** Check: Is the meaning natural in this scene? Is it appropriate for the selected level? Is it too abstract or idiomatic for young learners? A higher-level expression should not be selected simply to increase variety.
+
+#### Candidate Priority
+
+1. Directly supported and natural (Level A)
+2. Clearly supported by story context (Level B)
+3. Reasonable contextual extension (Level C)
+4. Lexical variety
+5. Additional scene coverage
+
+A sentence that invents a new event, feeling, or object with no meaningful story connection is not acceptable.
+
+#### Final Check
+
+- Are items spread across different scenes when possible?
+- Did I look beyond the scene containing the exact target phrase?
+- Can the pattern naturally describe a cause, consequence, or implied situation in another scene?
+- If the sentence is inferred, is the inference still reasonable?
+- Am I avoiding both extremes: so strict that every item comes from one scene; so flexible that sentences are no longer grounded in the story?
+
+**Priority order: Natural pattern use → Story connection → Scene diversity → Learner appropriateness → Lexical variety → Direct textual match**
+
+---
+
 #### Recall
 
 Generate **5 questions**.
