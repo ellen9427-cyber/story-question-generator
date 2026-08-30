@@ -440,7 +440,7 @@ with st.sidebar:
     cefr_level = BOOK_LEVEL_MAP[book_level]
 
     st.subheader("API 설정")
-    api_provider = st.radio("Provider", ["OpenAI", "Gemini"], horizontal=True)
+    api_provider = st.radio("Provider", ["Gemini", "OpenAI"], horizontal=True)
     api_key = st.text_input(
         "API Key",
         type="password",
