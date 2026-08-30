@@ -19,7 +19,12 @@ Generate the following:
 
 Step 1: Core Message and Opening Line
 - Core Message: one sentence capturing the story's central lesson
-- Opening Line: a single continuous tutor script that flows naturally: warm greeting → character's name → one-sentence theme → simple preference question with no right or wrong answer. Write as natural connected speech.
+- Opening Line: spoken by the main character in first person. Write as a single continuous string following this structure:
+  1. Warm greeting + self-introduction: e.g., "Hi! I'm [Name]." or "Hello there! I'm [Name]."
+  2. 1–2 short past-tense sentences summarizing what happened in the story (as the character).
+  3. One simple, light question related to the story theme with no right or wrong answer.
+  Good examples: "Hello there! I'm Cat. I love making clever plans. I helped my master change his life. Do you like making plans?" / "Hi! I'm Didi. I saw a beautiful cloud in space. I wanted to own it. What beautiful thing do you like?"
+  Rules: speak as "I" (the character), never as a narrator or teacher. Never use "We just read...", "Today we read...", "In this story...", or "Let's read...". Assume the learner has already read the story.
 
 Step 2: Key Language Patterns
 Generate 3–5 key language patterns from the story. Each as a short label with one example sentence.

@@ -266,18 +266,27 @@ Forbidden:
 ### 2. Opening Line
 
 Context:
-- The Opening Line is presented after the learner has finished reading the story.
+- The Opening Line is spoken by the main character after the learner has finished reading the story.
 
 Required:
-- Write the Opening Line in the past tense.
-- Assume the learner has already finished reading the story.
+- Write in first person as the character ("I"), not as a narrator or teacher.
+- Follow this structure in one continuous string:
+  1. Warm greeting + self-introduction: "Hi! I'm [Name]." or "Hello there! I'm [Name]."
+  2. 1–2 short past-tense sentences summarizing what happened in the story.
+  3. One simple question related to the story theme — no right or wrong answer.
+- Examples:
+  - "Hello there! I'm Cat. I love making clever plans. I helped my master change his life. Do you like making plans?"
+  - "Hi! I'm Didi. I saw a beautiful cloud in space. I wanted to own it. What beautiful thing do you like?"
+  - "Hi! I'm Pip! When I was a small caterpillar, I met my best friend Dot on a leaf. Do you have a good friend?"
 
 Forbidden:
-- Do not introduce the reading activity.
+- Do not speak as a narrator or teacher.
 - Do not use expressions such as:
-  - "Today we will read about..."
-  - "Let's read..."
+  - "We just read..."
+  - "Today we read..."
   - "In this story..."
+  - "Let's read..."
+  - "Today we will read about..."
 - Do not use any wording that assumes the learner has not yet read the story.
 
 ---

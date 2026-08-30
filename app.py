@@ -276,9 +276,23 @@ Character: {persona.get('name', '')} ({persona.get('age', '')}, {persona.get('ge
 Core Message: {persona.get('coreMessage', '')}
 Story Moral: {elements.get('moral', '')}
 
-Generate a new Opening Line for the tutor character persona.
-It must be a single continuous string of natural speech that flows:
-warm greeting → character's name → one-sentence theme → simple preference question with no right or wrong answer.
+Generate a new Opening Line spoken by the character in first person.
+
+Structure (all in one continuous string):
+1. Warm greeting + self-introduction: "Hi! I'm [Name]." or "Hello there! I'm [Name]."
+2. 1–2 short sentences summarizing what happened in the story (past tense, first person).
+3. One simple, light question related to the story theme — no right or wrong answer.
+
+Good examples:
+- "Hello there! I'm Cat. I love making clever plans. I helped my master change his life. Do you like making plans?"
+- "Hi! I'm Didi. I saw a beautiful cloud in space. I wanted to own it. What beautiful thing do you like?"
+- "Hi! I'm Hans. I worked hard and got some gold. I made many trades on my way home. Have you traded things with a friend? What did you trade?"
+
+Rules:
+- Speak as the character using "I", never as a narrator or teacher.
+- Do NOT use phrases like "We just read...", "Today we read...", "In this story...", or "Let's read...".
+- Do NOT assume the learner has not read the story yet.
+- Keep it short, warm, and natural — suitable for an elementary school learner.
 
 Return a JSON object:
 {{"openingLine": "the new opening line"}}
@@ -645,7 +659,7 @@ if "result" in st.session_state:
                         st.session_state.get("story_analysis", {}),
                     )
                     st.session_state["result"]["characterPersona"]["openingLine"] = new_opening
-                    st.session_state["opening_line_input"] = new_opening
+                    st.session_state.pop("opening_line_input", None)
                     st.rerun()
                 except Exception as e:
                     st.error(f"오류: {e}")
