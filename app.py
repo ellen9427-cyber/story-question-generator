@@ -137,7 +137,7 @@ def _format_patterns(raw: str) -> str:
     return "\n".join(formatted) if formatted else raw
 
 
-def build_prompt(story_text, story_analysis, user_patterns, keywords, story_words, selected_types, cefr_level="B1", protagonist_name=""):
+def build_prompt(story_text, story_analysis, user_patterns, selected_types, cefr_level="B1", protagonist_name=""):
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     summary = story_analysis.get("summary", "")
     elements = story_analysis.get("storyElements", {})
@@ -159,8 +159,6 @@ def build_prompt(story_text, story_analysis, user_patterns, keywords, story_word
         .replace("<<STORY_TEXT>>", story_text)
         .replace("<<STORY_CONTEXT>>", story_context)
         .replace("<<USER_PATTERNS>>", _format_patterns(user_patterns))
-        .replace("<<KEYWORDS>>", keywords)
-        .replace("<<STORY_WORDS>>", story_words)
         .replace("<<SELECTED_TYPES>>", ", ".join(selected_types))
     )
     if protagonist_line:
@@ -241,7 +239,7 @@ def generate_alt_text(api_key, api_provider, image_bytes, mime_type, scene_key, 
         return response.text.strip()
 
 
-def regenerate_question(api_key, api_provider, story_text, keywords, story_words, question_type, original_q, instruction, cefr_level="B1"):
+def regenerate_question(api_key, api_provider, story_text, question_type, original_q, instruction, cefr_level="B1"):
     type_label = dict(QUESTION_TYPES).get(question_type, question_type)
     sentence_structure_guide = CEFR_SENTENCE_STRUCTURE.get(cefr_level, CEFR_SENTENCE_STRUCTURE["B1"])
     prompt = f"""Story Text:
@@ -249,8 +247,6 @@ def regenerate_question(api_key, api_provider, story_text, keywords, story_words
 
 Book Level: CEFR {cefr_level} — vocabulary must not exceed this level.
 Sentence Structure Guide: {sentence_structure_guide}
-Keywords (may be used in questions): {keywords}
-Story Words (must NOT be used in questions): {story_words}
 
 The following question was generated for the "{type_label}" category:
 {json.dumps(original_q, ensure_ascii=False, indent=2)}
@@ -348,7 +344,7 @@ def build_excel(result, story_analysis, alt_texts):
     return buf.getvalue()
 
 
-def render_question(q, idx, question_type, api_key, api_provider, story_text, keywords, story_words, alt_texts, cefr_level="B1"):
+def render_question(q, idx, question_type, api_key, api_provider, story_text, alt_texts, cefr_level="B1"):
     with st.container(border=True):
         col1, col2 = st.columns([0.05, 0.95])
         with col1:
@@ -394,7 +390,7 @@ def render_question(q, idx, question_type, api_key, api_provider, story_text, ke
                 with st.spinner("재생성 중..."):
                     try:
                         new_q = regenerate_question(
-                            api_key, api_provider, story_text, keywords, story_words,
+                            api_key, api_provider, story_text,
                             question_type, q, instruction, cefr_level,
                         )
                         st.session_state["result"]["questions"][question_type][idx] = new_q
@@ -481,22 +477,6 @@ with st.sidebar:
         "패턴",
         placeholder="not {adj} anymore, I'm not scared anymore.\nI used to {verb}, I used to give up easily.",
         height=120,
-        label_visibility="collapsed",
-    )
-
-    st.subheader("키워드")
-    keywords = st.text_area(
-        "키워드",
-        placeholder="tennis, racket, practice, confidence, ...",
-        height=70,
-        label_visibility="collapsed",
-    )
-
-    st.subheader("Story Words")
-    story_words = st.text_area(
-        "스토리 단어",
-        placeholder="whispers, shimmering, silver, ...",
-        height=70,
         label_visibility="collapsed",
     )
 
@@ -598,7 +578,7 @@ if "story_analysis" in st.session_state:
                     prompt = build_prompt(
                         st.session_state["story_text_saved"],
                         st.session_state["story_analysis"],
-                        user_patterns, keywords, story_words, selected_types, cefr_level,
+                        user_patterns, selected_types, cefr_level,
                         protagonist_name,
                     )
                     raw = call_api(api_key, api_provider, prompt)
@@ -700,5 +680,5 @@ if "result" in st.session_state:
                 for i, q in enumerate(questions.get(key, [])):
                     render_question(
                         q, i, key, api_key, api_provider,
-                        story_text_saved, keywords, story_words, alt_texts, cefr_level,
+                        story_text_saved, alt_texts, cefr_level,
                     )

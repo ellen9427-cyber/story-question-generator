@@ -12,8 +12,6 @@ Each entry is formatted as "- Pattern: [pattern] | Example: [example sentence]".
 Use the pattern exactly as written. The example sentence shows how to use the pattern.
 <<USER_PATTERNS>>
 
-Keywords (may appear in questions): <<KEYWORDS>>
-Story Words (must NOT be used in questions — replace with simpler vocabulary): <<STORY_WORDS>>
 
 Generate the following:
 
