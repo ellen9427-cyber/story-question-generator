@@ -40,16 +40,27 @@ const QUESTION_TYPES = [
 
 const TAB_KEYS = QUESTION_TYPES.map((t) => t.key);
 
+const CLOSING_LINES = [
+  "You did such a great job today! See you next time!",
+  "You did really well today. Can't wait to see you again!",
+  "You were amazing today! Bye for now!",
+  "You are a great learner! See you soon!",
+  "Every day you get better and better! See you next time!",
+  "You were amazing today. See you soon!",
+];
+
 export default function Home() {
   const [storyText, setStoryText] = useState("");
   const [patterns, setPatterns] = useState("");
   const [characterInfo, setCharacterInfo] = useState("");
+  const [protagonistName, setProtagonistName] = useState("");
   const [coreMessage, setCoreMessage] = useState("");
   const [openingLine, setOpeningLine] = useState("");
   const [apiProvider, setApiProvider] = useState<"openai" | "gemini">("openai");
   const [apiKey, setApiKey] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>(TAB_KEYS);
   const [result, setResult] = useState<GeneratedResult | null>(null);
+  const [closingLine, setClosingLine] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("patternPractice");
@@ -87,6 +98,7 @@ export default function Home() {
           storyText,
           patterns,
           characterInfo,
+          protagonistName,
           coreMessage,
           openingLine,
           selectedTypes,
@@ -98,6 +110,7 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "생성 실패");
       setResult(data.result);
+      setClosingLine(CLOSING_LINES[Math.floor(Math.random() * CLOSING_LINES.length)]);
       if (selectedTypes.length > 0) setActiveTab(selectedTypes[0]);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "오류가 발생했습니다.");
@@ -195,6 +208,13 @@ export default function Home() {
             <h2 className="text-sm font-semibold text-gray-700 mb-2">
               캐릭터 정보
             </h2>
+            <input
+              type="text"
+              value={protagonistName}
+              onChange={(e) => setProtagonistName(e.target.value)}
+              placeholder="주인공 이름 (예: Judy)"
+              className="w-full mb-2 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
             <textarea
               value={characterInfo}
               onChange={(e) => setCharacterInfo(e.target.value)}
@@ -324,6 +344,21 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Closing Line */}
+              {closingLine && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-5 flex items-start gap-3">
+                  <span className="text-amber-500 text-base flex-shrink-0">★</span>
+                  <div>
+                    <span className="text-xs font-semibold text-amber-600 uppercase tracking-wide block mb-1">
+                      Closing Line
+                    </span>
+                    <p className="text-sm font-medium text-amber-800 italic">
+                      &ldquo;{closingLine}&rdquo;
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Question Tabs */}
               <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">

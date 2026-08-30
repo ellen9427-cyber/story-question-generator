@@ -12,8 +12,13 @@ function buildPrompt(
   characterInfo: string,
   coreMessage: string,
   openingLine: string,
-  selectedTypes: string[]
+  selectedTypes: string[],
+  protagonistName: string
 ): string {
+  const protagonistLine = protagonistName.trim()
+    ? `Protagonist Name: ${protagonistName.trim()}`
+    : "";
+
   return `
 Story Text:
 ${storyText}
@@ -23,6 +28,7 @@ ${patterns}
 
 Character Info:
 ${characterInfo}
+${protagonistLine}
 
 Core Message: ${coreMessage}
 Opening Line: ${openingLine}
@@ -42,33 +48,33 @@ Return a JSON object with this exact structure:
   "questions": {
     "patternPractice": [
       {
-        "question": "Say it with me: '[pattern sentence]'",
+        "question": "Say it with me: 'I [pattern sentence]'",
         "relatedScene": "SC##",
-        "targetAnswer": "exact sentence to repeat",
+        "targetAnswer": "I [pattern sentence]",
         "acceptableCriteria": "grading criterion in Korean"
       }
     ],
     "recall": [
       {
-        "question": "factual question about the story (from character's POV using 'I')",
+        "question": "factual question from the character's POV using 'I' (e.g., 'What sport did I love?')",
         "relatedScene": "SC##",
-        "targetAnswers": ["answer variant 1", "answer variant 2"],
+        "targetAnswers": ["You [verb]...", "You [verb]..."],
         "acceptableCriteria": "grading criterion in Korean"
       }
     ],
     "inference": [
       {
-        "question": "inference question (from character's POV using 'I')",
+        "question": "inference question from the character's POV using 'I' (e.g., 'Why did I feel scared?')",
         "relatedScene": "SC##",
-        "targetAnswers": ["answer variant 1", "answer variant 2"],
+        "targetAnswers": ["You [verb]...", "You [verb]..."],
         "acceptableCriteria": "grading criterion in Korean"
       }
     ],
     "transfer": [
       {
-        "question": "question connecting story to learner's own life",
+        "question": "question connecting story to learner's own life (e.g., 'What do you do when you feel scared?')",
         "relatedScene": "SC##",
-        "targetAnswers": ["example answer 1", "example answer 2"],
+        "targetAnswers": ["I [verb]...", "I [verb]..."],
         "acceptableCriteria": "grading criterion in Korean"
       }
     ],
@@ -76,7 +82,7 @@ Return a JSON object with this exact structure:
       {
         "question": "open-ended reflection question about the story",
         "relatedScene": "SC##",
-        "targetAnswers": ["example answer 1", "example answer 2"],
+        "targetAnswers": ["I think...", "I think..."],
         "acceptableCriteria": "grading criterion in Korean"
       }
     ]
@@ -85,12 +91,11 @@ Return a JSON object with this exact structure:
 
 Rules:
 - Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
-- patternPractice: use the provided core patterns as the sentences to repeat.
-- recall: questions must be answerable directly from the story text only.
-- inference: questions require reading between the lines of the story.
-- transfer: questions ask the learner about their own experience or opinion, linked to story themes.
-- reflection: open-ended questions asking for evaluation or advice about story events.
-- Questions should be from the character's first-person perspective ("What sport did I love?").
+- patternPractice: use the provided core patterns as the sentences to repeat. The question says "Say it with me: 'I [pattern]'" and targetAnswer must start with "I".
+- recall: questions are from the character's first-person POV using "I" (e.g., "What sport did I love?"). The learner answers addressing the character, so ALL targetAnswers must start with "You" (e.g., "You loved tennis."). NEVER use "she", "he", or the character's name in targetAnswers for recall.
+- inference: same POV rule as recall — questions use "I", ALL targetAnswers must start with "You". NEVER use "she", "he", or the character's name in targetAnswers for inference.
+- transfer: questions use "you" to address the learner directly (e.g., "What do you do when...?"). targetAnswers use "I" because the learner talks about themselves.
+- reflection: open-ended questions about the story. targetAnswers use "I think..." or "I believe..." because the learner expresses their own opinion.
 - Acceptable criteria must be written in Korean.
 - All questions and answers must be in English.
 `;
@@ -107,6 +112,7 @@ export async function POST(request: NextRequest) {
       selectedTypes,
       apiProvider,
       apiKey,
+      protagonistName,
     } = await request.json();
 
     if (!apiKey) {
@@ -119,7 +125,8 @@ export async function POST(request: NextRequest) {
       characterInfo,
       coreMessage,
       openingLine,
-      selectedTypes
+      selectedTypes,
+      protagonistName ?? ""
     );
 
     let rawText = "";
