@@ -48,9 +48,9 @@ Return a JSON object with this exact structure:
   "questions": {
     "patternPractice": [
       {
-        "question": "Say it with me: 'I [pattern sentence]'",
+        "question": "Say it with me: '[pattern sentence]'",
         "relatedScene": "SC##",
-        "targetAnswer": "I [pattern sentence]",
+        "targetAnswer": "[exact pattern sentence]",
         "acceptableCriteria": "grading criterion in Korean"
       }
     ],
@@ -91,11 +91,11 @@ Return a JSON object with this exact structure:
 
 Rules:
 - Generate exactly 5 questions for each selected type (omit unselected types from the JSON).
-- patternPractice: use the provided core patterns as the sentences to repeat. The question says "Say it with me: 'I [pattern]'" and targetAnswer must start with "I".
-- recall: questions are from the character's first-person POV using "I" (e.g., "What sport did I love?"). The learner answers addressing the character, so ALL targetAnswers must start with "You" (e.g., "You loved tennis."). NEVER use "she", "he", or the character's name in targetAnswers for recall.
-- inference: same POV rule as recall — questions use "I", ALL targetAnswers must start with "You". NEVER use "she", "he", or the character's name in targetAnswers for inference.
-- transfer: questions use "you" to address the learner directly (e.g., "What do you do when...?"). targetAnswers use "I" because the learner talks about themselves.
-- reflection: open-ended questions about the story. targetAnswers use "I think..." or "I believe..." because the learner expresses their own opinion.
+- patternPractice: Each question: "Say it with me: '[pattern sentence]'". The targetAnswer is the exact same sentence. The sentence can start with any subject — do NOT force "I". Story verbatim rule: if the pattern appears verbatim in story dialogue, use it (remove quotes and speaker tags). No-duplicate rule: if the same sentence would repeat across scenes, use it only for the first scene and create a variation for other scenes. Progressive difficulty: sentence 1 is shortest/simplest, sentence 5 is longest/most complex.
+- recall: questions from the character's "I" POV. targetAnswers address the character with "You [verb]..." but short noun-phrase alternatives are also fine (e.g., "A rabbit. / You brought a rabbit."). NEVER use the character's name or "she"/"he" to refer to the main character in targetAnswers.
+- inference: same POV as recall — questions use "I". targetAnswers use "You [verb]..." for the main character. For other characters' actions/emotions, their pronoun ("he", "she") is acceptable.
+- transfer: questions use "you" to address the learner. targetAnswers start with "I".
+- reflection: for yes/no questions use "Yes, because [reason]. / No, because [reason]." For open-ended questions use "I think..." or "I believe...".
 - Acceptable criteria must be written in Korean.
 - All questions and answers must be in English.
 `;

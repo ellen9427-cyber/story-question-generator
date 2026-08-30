@@ -17,12 +17,12 @@ Requirements:
   Say it with me: "Sentence"
 
 - The sentence inside the quotation marks **must include the provided target pattern**.
+- **Story verbatim rule**: If the target pattern appears as a dialogue line or sentence in the story, extract and use that exact sentence — remove only the quotation marks and speaker tags (e.g., remove "he asks" or "Milo says"). Prefer verbatim story sentences over newly created ones.
+- **No-duplicate rule**: If the same verbatim sentence would be used for more than one scene (i.e., the same quote appears multiple times in the story), use it for the first occurrence only. For all other scenes where that sentence would repeat, create a new variation that uses the same pattern but different content suited to that scene.
 - Use **key vocabulary (verbs, adjectives, nouns, etc.) from the story whenever possible**.
 - **This is the only activity where reusing story words is encouraged.**
-- This is an exception to the rule about avoiding direct reuse of story wording.
 - Create natural, grammatically correct sentences suitable for elementary learners.
-- Do not simply copy an original sentence from the story.
-- Adapt the story vocabulary into a new sentence while keeping the target pattern.
+- **Progressive difficulty**: Arrange the 5 sentences from simplest to most complex. The first sentence should be the shortest with the most basic vocabulary; each subsequent sentence should be slightly longer or use more complex phrasing, so the 5th sentence is the most challenging of the set.
 
 #### Recall
 
