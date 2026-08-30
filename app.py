@@ -551,7 +551,7 @@ if analyze_clicked:
                     "story_text_saved": story_text,
                     "alt_texts": st.session_state.get("alt_texts"),
                     "result": None,
-                }, ensure_ascii=False))
+                }))
             except Exception as e:
                 st.error(f"분석 오류: {e}")
 
@@ -598,7 +598,7 @@ if "story_analysis" in st.session_state:
                         "story_text_saved": st.session_state["story_text_saved"],
                         "alt_texts": st.session_state.get("alt_texts"),
                         "result": result_data,
-                    }, ensure_ascii=False))
+                    }))
                 except Exception as e:
                     st.error(f"오류가 발생했습니다: {e}")
 
