@@ -10,19 +10,59 @@ A target sentence pattern will be provided separately by the planner.
 
 Generate **5 Pattern Practice sentences** using the provided pattern.
 
-Requirements:
-
-- Follow this exact format:
+Format:
 
   Say it with me: "Sentence"
 
-- The sentence inside the quotation marks **must include the provided target pattern**.
-- **Story verbatim rule**: If the target pattern appears as a dialogue line or sentence in the story, extract and use that exact sentence — remove only the quotation marks and speaker tags (e.g., remove "he asks" or "Milo says"). Prefer verbatim story sentences over newly created ones.
-- **No-duplicate rule**: If the same verbatim sentence would be used for more than one scene (i.e., the same quote appears multiple times in the story), use it for the first occurrence only. For all other scenes where that sentence would repeat, create a new variation that uses the same pattern but different content suited to that scene.
-- Use **key vocabulary (verbs, adjectives, nouns, etc.) from the story whenever possible**.
-- Create natural, grammatically correct sentences suitable for elementary learners.
-- **Scene order first**: Arrange the 5 sentences in chronological scene order (SC01 before SC02, etc.). This takes priority over all other ordering considerations.
-- **Progressive difficulty within scene order**: Within the constraint of scene order, write each sentence to be slightly longer or more complex than the previous one where possible — so that difficulty generally increases from sentence 1 to sentence 5.
+The sentence inside the quotation marks must include the provided target pattern.
+
+---
+
+### Story-Grounded Pattern Sentence Generation
+
+When generating sentences using a target pattern, always prioritize **story accuracy, semantic naturalness, learner appropriateness, and contextual relevance** over lexical variety.
+
+**Core rules:**
+
+1. **Ground every sentence strictly in the provided story.** Use only actions, situations, objects, emotions, and relationships explicitly stated or clearly supported by the story. Do not invent new events or circumstances to fit the pattern.
+
+2. **Analyze the story scene by scene before generating sentences.** Identify which scenes naturally support the target pattern. Each sentence must be traceable to a specific scene.
+
+3. **Scene order is mandatory.** Arrange sentences in chronological scene order (SC01 → SC02 → SC03...). Do not reorder for any other reason — not for difficulty, variety, or naturalness. This is the highest-priority ordering rule.
+
+4. **Progressive difficulty within scene order.** Within the constraint of scene order, write each sentence to be slightly longer or more complex than the previous where possible, so difficulty generally increases from sentence 1 to sentence 5.
+
+5. **Match the user-selected story level.** All sentences must use vocabulary, grammar, and sentence structure appropriate for the assigned CEFR level. Do not increase difficulty because a more complex sentence sounds more natural.
+
+6. **Young learner appropriateness always.** The primary learners are preschool and elementary-age EFL students. Keep content concrete, clear, and age-appropriate regardless of level.
+
+7. **Story verbatim rule.** If the target pattern appears verbatim in story dialogue, use that exact sentence (remove quotation marks and speaker tags such as "he asks" or "Milo says"). Prefer verbatim story sentences over newly created ones.
+
+8. **No-duplicate rule.** If the same verbatim sentence would appear for more than one scene, use it only for the first occurrence. Create a variation for subsequent scenes.
+
+9. **Do not force lexical variation.** If only one word or phrase naturally fits the pattern in this story, reuse it across different story contexts rather than inventing unsupported expressions. Contextual variation (different subject, cause, consequence, or scene) is preferred over forced lexical variation.
+
+   Example with pattern "nothing to ___" where only "nothing to eat" is story-supported:
+   - Poppy has nothing to eat.
+   - Poppy is hungry because he has nothing to eat.
+   - His tummy rumbles because he has nothing to eat.
+   - After losing his strawberries, Poppy has nothing to eat.
+
+10. **Reject unnatural applications.** A sentence must be both grammatically correct AND natural in context AND appropriate for the learner level. Grammatical correctness alone is not sufficient.
+
+11. **Do not fabricate story content.** If the story does not support the requested number of distinct examples, reuse valid expressions in different story contexts. Do not invent story details.
+
+**Priority order when making decisions:**
+
+Story accuracy → Chronological scene order → Natural meaning → Target pattern accuracy → User-selected level → Young learner appropriateness → Variety
+
+**Before finalizing each sentence, verify:**
+- Is it grounded in the story?
+- Is it in chronological scene order?
+- Does it use the target pattern correctly?
+- Does it match the assigned difficulty level?
+- Is it age-appropriate for young EFL learners?
+- Am I creating unnecessary variation unsupported by the story?
 
 #### Recall
 
