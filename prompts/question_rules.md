@@ -62,6 +62,7 @@ Requirements:
 ## General Requirements
 
 - Generate exactly **5 items** for every activity type.
+- **SCENE ORDER IS MANDATORY**: Within every activity type, all items MUST be sorted strictly in chronological scene order — SC01 before SC02, SC03 before SC05, and so on. This applies to Pattern Practice, Recall, Inference, Transfer, and Reflection without exception. Never place a question from a later scene before a question from an earlier scene. Do not reorder by difficulty, theme, or any other criterion. Scene order is the highest-priority rule.
 - Questions must not overlap in meaning or assess the same idea.
 - Cover different parts of the story whenever possible.
 - Prefer WH questions over Yes/No questions.

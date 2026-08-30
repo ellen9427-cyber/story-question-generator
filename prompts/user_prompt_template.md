@@ -32,3 +32,4 @@ Generate 3–5 key language patterns from the story. Each as a short label with 
 Step 3: Questions
 Generate 5 questions for each selected type: <<SELECTED_TYPES>>
 Do not repeat ideas across questions or types.
+CRITICAL — SCENE ORDER: Within each question type, questions MUST be ordered strictly by scene number (SC01 → SC02 → SC03 ...). This rule applies to ALL types including Pattern Practice. Never place a later scene before an earlier one. Scene order is the absolute first priority — do not reorder for any other reason.
