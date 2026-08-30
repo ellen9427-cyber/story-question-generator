@@ -98,6 +98,74 @@ Requirements:
 
 - Ask students to evaluate, judge, or reflect on the lesson, values, or characters.
 
+## Examples of Well-Designed Questions by Type
+
+The following examples are based on the story of **Milo**, who loses his colors, looks for them in the forest, meets colorful animals and objects, and eventually discovers his own colors again.
+
+### Recall
+
+Recall questions ask about information directly stated or clearly shown in the story. The learner only needs to remember a fact — no interpretation or judgment required.
+
+Good examples:
+- **What color was Milo in the morning?** → Gray.
+- **What did Milo see first in the forest?** → A yellow butterfly.
+- **What did Milo see in the water?** → Many colors.
+
+### Inference
+
+Inference questions require the learner to connect two or more story details to reach a conclusion that is not stated in a single sentence.
+
+Good examples:
+- **Why did Milo stop asking others for their colors?** → He learned that their colors were important to them.
+- **How did seeing many colors in the water change Milo?** → He began to feel better and see colors differently.
+- **What did Milo learn from meeting the butterfly and the flower?** → He learned that colors can be important for different reasons.
+
+Avoid classifying a question as Inference if the story directly states the answer in one sentence. For example, "Why was Milo sad in the morning?" is too simple if the story explicitly says he lost his colors and felt sad.
+
+### Transfer
+
+Transfer questions connect a story idea to the learner's own life, preferences, experiences, or surroundings.
+
+Good examples:
+- **What colors can you find around you?** → I see green trees and a blue sky.
+- **Have you ever wanted something your friend had? What was it?** → Yes. I wanted my friend's toy.
+- **What is something special about you?** → I am good at drawing.
+- **What is different about you and your friends?** → I like drawing, but my friend likes singing.
+
+### Reflection
+
+Reflection questions must focus on one of three types:
+
+**Type 1 — Put the learner in the character's situation**
+Ask learners what they would do if they were the character.
+- **If you were Milo, would you look for your lost colors? Why?** → Yes. I would want to find my colors.
+- **If you were Milo, what would you do when the butterfly said no?** → I would look for my color somewhere else.
+
+**Type 2 — Evaluate the character's action or decision**
+Ask learners to judge the character's behavior or choices. Accept different answers when the learner gives a reasonable story-based reason.
+- **Do you think it was a good idea for Milo to ask others for their colors? Why or why not?** → No. They needed their own colors.
+- **Was it good for Milo to stop trying to take other colors? Why?** → Yes. The colors were important to the others.
+
+**Type 3 — Reflect on the story's lesson**
+Ask learners to think about the overall meaning or message of the story.
+- **What did Milo learn from his journey?** → He learned that his own colors were special.
+- **What can we learn from Milo's story?** → We can learn to value what makes us special.
+
+### Important: Classify by thinking required, not by question wording
+
+Do not classify a question based on words like "Why?", "Do you think...?", or "If you were...". Classify by the type of thinking the learner must use.
+
+| Type | Example | Thinking required |
+|------|---------|------------------|
+| Recall | What color was the butterfly? | Remember a fact |
+| Inference | What did Milo learn from meeting the butterfly and the flower? | Connect multiple story events |
+| Transfer | Have you ever wanted something your friend had? | Connect story to own experience |
+| Reflection — Situation | If you were Milo, would you ask the butterfly for its color? | Imagine making a decision as the character |
+| Reflection — Evaluation | Do you think Milo should have asked others for their colors? | Judge the character's behavior |
+| Reflection — Lesson | What can we learn from Milo's story? | Reflect on the overall message |
+
+---
+
 ## General Requirements
 
 - Generate exactly **5 items** for every activity type.
