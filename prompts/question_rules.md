@@ -352,6 +352,106 @@ Before finalizing each question, verify that:
 - The answer is reasonably clear and not overly broad.
 - The question is engaging and encourages meaningful thinking.
 
+---
+
+### 1. Avoid Trivial Recall Questions
+
+Do not generate Recall questions that can be answered correctly through general world knowledge, common sense, or obvious object properties without reading the story.
+
+Avoid questions such as:
+- **What color are the bananas at the picnic?** (bananas are generally known to be yellow)
+- **What color is broccoli?**
+- **How many legs does the rabbit have?**
+
+Instead, ask about story-specific information: what a character did, what happened before/after an event, what object a character had, where a character went, what changed during the story.
+
+**Bad example:**
+What color are the bananas at the picnic? → Yellow. (answerable without reading the story)
+
+**Better examples:**
+- What food did Poppy try first? → A yellow banana.
+- What happened to Poppy's feet after he ate the banana? → They turned yellow.
+- What did Poppy drop into the river? → His basket of strawberries.
+
+**Recall quality check — before accepting a question, ask:**
+- Would a learner who has never read the story still be able to answer this easily?
+- Is the answer obvious from common knowledge?
+- Does answering require remembering the character, event, action, object, or change in the story?
+
+If the learner can answer correctly without knowing the story, replace the question.
+
+---
+
+### 2. Distribute Questions Across Different Scenes
+
+Do not generate too many questions from the same scene or a small group of scenes. Questions should cover a wide range of scenes across the story.
+
+Rules:
+- Spread questions across the beginning, middle, and end of the story.
+- Do not repeatedly use the same scene simply because it contains many easy question candidates.
+- Avoid multiple questions that test slightly different details from the same event.
+- When several scenes support equally good questions, choose scenes not already used.
+
+Prefer a distribution such as: one from an early scene, one from the early-middle, one from the middle, one from the later-middle, one from the ending.
+
+**Scene distribution check:**
+- Are too many questions based on the same scene?
+- Are meaningful scenes from other parts of the story being ignored?
+- Does the full question set represent the story from beginning to end?
+
+---
+
+### 3. Match Target Answers to the Correct Character and Pronoun
+
+The Target Answer must use the correct grammatical person based on who the question is about. Do not automatically begin every Target Answer with "You..." simply because the main character speaks in first person.
+
+**Main character** — if the question refers to the speaking main character, second-person ("You") is appropriate.
+Example: Q: "What food did I like at first?" → A: "You liked red strawberries."
+
+**Other characters** — use the correct third-person pronoun or the character's name. Never use "You" for a non-speaking character.
+Example: Q: "What does Chef Pip bring to Poppy?" → A: "She brings a basket of colorful food." (NOT "You bring...")
+
+**Pronoun rules:**
+- Male character → He
+- Female character → She
+- Animal or character with established pronoun → use that pronoun
+- Plural characters → They
+- Object → It
+- Speaking main character (referred to as "I" in the question) → You
+- Named non-speaking character → character's name or correct third-person pronoun
+
+---
+
+### 4. Check Question–Answer Perspective Consistency
+
+Before finalizing each question and Target Answer, identify: (1) who is speaking, (2) who the question is asking about, (3) what grammatical person should appear in the answer.
+
+Example 1 — Speaking character: Poppy
+Q: "Why did I follow the yummy smell?" → A: "You were hungry." ✓ (I = Poppy, tutor responds as "you")
+
+Example 2 — Speaking character: Poppy
+Q: "Why did Chef Pip offer me a banana?" → A: "She wanted you to try a new food." ✓
+Do NOT write: "You wanted to try a new food." (that changes who performed the action)
+
+Example 3:
+Q: "What does Chef Pip do every year?" → A: "She holds a Rainbow Picnic." ✓
+Do NOT write: "You hold a Rainbow Picnic." ✗
+
+---
+
+### Final Question Set Quality Check
+
+Before outputting the full question set, verify:
+- Recall questions require actual story recall — none can be answered through obvious world knowledge.
+- Questions are distributed across different scenes from beginning to end.
+- No single scene is unnecessarily overused.
+- Target Answers refer to the correct character with the correct pronoun.
+- "You" is used only when the answer refers to the speaking main character.
+- Other characters use he, she, they, it, or their name as appropriate.
+- The subject performing the action in the Target Answer matches the story.
+
+**Priority order: Story-specific value → Correct question type → Scene diversity → Character accuracy → Pronoun accuracy → Learner level → Natural English**
+
 ## Acceptable Criteria Generation Rules
 
 For every generated question, also generate an **Acceptable Criteria** statement in Korean explaining what meaning, key information, or sentence structure must be included for the learner's response to be accepted as correct.
