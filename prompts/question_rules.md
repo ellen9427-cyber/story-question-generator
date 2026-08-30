@@ -12,18 +12,20 @@ Do not generate Question, Target Answer, and Acceptable Criteria simultaneously 
 2. Generate multiple candidate questions — more than the required 5.
 3. Verify that each candidate correctly belongs to the requested question type.
 4. For Transfer: verify that each candidate traces back to a named Transfer Anchor. Reject any that do not.
-5. Remove candidates that are trivial, common-knowledge-answerable, repetitive, unnatural, weakly grounded, or semantically misaligned.
-6. Finalize the question first.
-7. If the question is about the Speaking Main Character, confirm it uses I / me / my — not the character's name or he / she.
-8. Generate the Target Answer only after the question is finalized.
-9. Identify who the question is about, then determine the correct grammatical person for the Target Answer.
-10. Verify that the Target Answer directly and naturally answers the question.
-11. Verify that both question and Target Answer are within the selected CEFR level — check sentence structure, not just vocabulary.
-12. Generate Acceptable Criteria only after both Question and Target Answer are finalized.
-13. Select the best 5 from the evaluated candidates.
-14. Review the scene distribution of the selected 5.
-15. Sort the final 5 by scene number (SC01 → SC05) as the last step.
-16. Output the final result.
+5. For Recall / Inference: if the question asks about an event, action, feeling, state, or change that occurred in the completed story, confirm it uses Simple Past (did / was / were). Rewrite any candidate that uses present tense for a completed story event.
+6. Remove candidates that are trivial, common-knowledge-answerable, unnatural, weakly grounded, or semantically misaligned.
+7. Finalize the question first.
+8. If the question is about the Speaking Main Character, confirm it uses I / me / my — not the character's name or he / she.
+9. Generate the Target Answer only after the question is finalized.
+10. Identify who the question is about, then determine the correct grammatical person for the Target Answer.
+11. Verify that the Target Answer directly and naturally answers the question.
+12. Verify that both question and Target Answer are within the selected CEFR level — check sentence structure, not just vocabulary.
+13. Generate Acceptable Criteria only after both Question and Target Answer are finalized.
+14. Assign an answer concept to each remaining candidate. Reject any candidate whose answer concept is substantially the same as another already selected candidate (see Answer Diversity Rule).
+15. Select the best 5 from the evaluated candidates.
+16. Review the scene distribution of the selected 5.
+17. Sort the final 5 by scene number (SC01 → SC05) as the last step.
+18. Output the final result.
 
 **Core principle: Question quality determines which questions are selected. Scene order controls output order only.**
 
@@ -35,12 +37,13 @@ Do not generate Question, Target Answer, and Acceptable Criteria simultaneously 
 - Internally evaluate more than 5 candidates before selecting.
 - Remove any candidate that is:
   - trivial or answerable by common sense without reading the story
-  - repetitive (assesses the same idea as another selected question)
+  - a duplicate in answer concept: the expected core answer is substantially the same as another selected question, even if the wording differs (see Answer Diversity Rule)
   - unnatural in English
   - weakly grounded in the story
   - incorrectly classified for the requested question type
   - overly obvious (for Inference: the answer requires almost no interpretation)
   - semantically misaligned (Target Answer does not directly answer the question)
+  - for Recall / Inference: asking about a completed story event in present tense instead of Simple Past
   - for Transfer: not traceable to a Transfer Anchor identified in Story Analysis
   - for Recall/Inference about the Speaking Main Character: uses the character's name or he/she instead of I/me/my
   - structurally too complex for the selected CEFR level (even if vocabulary is easy)
@@ -87,20 +90,25 @@ When generating sentences using a target pattern, always prioritize **story accu
 
 8. **No-duplicate rule.** If the same verbatim sentence would appear for more than one scene, use it only for the first occurrence. Create a variation for subsequent scenes.
 
-9. **Do not force lexical variation.** If only one word or phrase naturally fits the pattern in this story, reuse it across different story contexts. Contextual variation (different subject, cause, consequence, or scene) is preferred over forced lexical variation.
+9. **Slot Variation Rule.** When the pattern contains a replaceable slot, first search the whole story for different natural slot values. Prefer meaningful slot variation when it is genuinely story-supported and appropriate for the level.
 
-   Example with pattern "nothing to ___" where only "nothing to eat" is story-supported:
+   **Preferred — different slot values, each story-grounded:**
+   With pattern "nothing to ___": `nothing to eat`, `nothing to carry`, `nothing to taste` — each in a different story context, if all are genuinely supported and level-appropriate.
+
+   **Fallback — same slot value, different story context:**
+   Only when there are not enough strong slot variations, reuse the strongest slot value in different story-supported contexts:
    - Poppy has nothing to eat.
    - Poppy is hungry because he has nothing to eat.
-   - His tummy rumbles because he has nothing to eat.
    - After losing his strawberries, Poppy has nothing to eat.
+
+   Do not force a slot variation that is unnatural, unsupported, too abstract, or above the selected CEFR level. Do not reuse the same slot value repeatedly as the default strategy when alternatives are available.
 
 10. **Reject unnatural applications.** A sentence must be grammatically correct AND natural in context AND appropriate for the learner level.
 
-11. **Do not fabricate story content.** If the story does not support distinct examples, reuse valid expressions in different story contexts.
+11. **Do not fabricate story content.** Do not invent new plot events or situations. If the story supports multiple slot values, use them. If only one slot value is strongly supported, reuse it in different story-supported contexts rather than inventing variations.
 
 **Priority order:**
-Story accuracy → Natural meaning → Target pattern accuracy → User-selected level → Young learner appropriateness → Scene diversity → Lexical variety
+Story accuracy → Target pattern accuracy → Natural meaning → User-selected level → Young learner appropriateness → Natural slot variation → Scene diversity → Contextual variation using the same slot → Additional lexical variety
 
 **Before finalizing each sentence, verify:**
 - Is it grounded in the story?
@@ -140,7 +148,9 @@ Use Level C when more scene variety is needed, but keep it lower priority than A
 
 **Pattern Practice is not Recall.** A sentence may restate an event, express a consequence, or slightly extend a scene — as long as it remains clearly connected to the story.
 
-**Allow natural verb variation** when different verbs are story-supported and appropriate for the level. Do not restrict all items to the same verb, but do not invent unsupported variations.
+**Natural slot variation is preferred.** When the pattern has a replaceable slot, prefer candidates that use a different slot value over candidates that repeat the same slot value in a different context — provided the slot variation is story-grounded and level-appropriate. Contextual variation (same slot, different surrounding text) is the fallback when natural slot alternatives are not available.
+
+**Allow natural slot variation** when different slot values are story-supported and appropriate for the level. Do not restrict all items to the same slot value, but do not invent unsupported variations.
 
 **Prioritize scene diversity when quality is equal.** When two candidates are equally strong, prefer the one from a scene not yet represented.
 
@@ -148,20 +158,43 @@ Use Level C when more scene variety is needed, but keep it lower priority than A
 
 #### Candidate Priority
 
-1. Directly supported and natural (Level A)
-2. Clearly supported by story context (Level B)
-3. Reasonable contextual extension (Level C)
-4. Lexical variety
+1. Level A or B — natural different slot value (preferred variation strategy)
+2. Level A or B — same slot value, different story context (fallback variation strategy)
+3. Level C — natural slot variation (when level-appropriate and clearly supported)
+4. Level C — same slot, contextual extension
 5. Additional scene coverage
 
 #### Final Check
 
 - Are items spread across different scenes when possible?
+- Did I search the whole story for different natural slot values before reusing the same one?
 - Did I look beyond the scene containing the exact target phrase?
 - If the sentence is inferred, is the inference reasonable?
 - Am I avoiding both extremes?
 
-**Priority order: Story accuracy → Natural pattern use → Learner appropriateness → Scene diversity → Lexical variety**
+**Priority order: Story accuracy → Target pattern accuracy → Natural meaning → Learner appropriateness → Natural slot variation → Scene diversity → Contextual variation using the same slot → Additional lexical variety**
+
+---
+
+### Required Candidate Process for Pattern Practice
+
+Follow this sequence when generating Pattern Practice sentences:
+
+**Step 1** — Identify the fixed part and replaceable slot of the pattern.
+Example: `nothing to {verb}` → Fixed frame: `nothing to` / Replaceable slot: `{verb}`
+
+**Step 2** — Search the whole story for different natural values for the slot.
+Example candidate search: eat / carry / taste / drink / do
+
+**Step 3** — Filter candidates by: (1) story grounding, (2) semantic naturalness, (3) CEFR level, (4) young learner appropriateness.
+
+**Step 4** — Reject slot variations that are unsupported, unnatural, too abstract, idiomatic above the learner level, or created only for variety.
+
+For the Poppy story at A1: `nothing to eat` and `nothing to carry` are potentially strong. `nothing to lose` and `nothing to fear` are likely too abstract — do not select them merely to achieve slot variation.
+
+**Step 5** — Use as many strong slot variations as naturally available.
+
+**Step 6** — Only if fewer than 5 strong examples remain after Steps 1–5, reuse the strongest slot value in different story-supported contexts.
 
 ---
 
@@ -210,6 +243,33 @@ Avoid Inference questions where the reason or answer is so explicitly and immedi
 **Avoid:**
 **Why did I take a tiny bite of the yellow banana?**
 → The surrounding text immediately lists: nothing to eat, hungry, tummy rumbling, offered a banana, smells sweet. Almost no interpretation needed.
+
+---
+
+### Recall / Inference Tense Rule
+
+**When asking about actions, events, feelings, states, or changes that occurred in the completed story, use the Simple Past.**
+
+Recall and Inference are about a story the learner has already read. Story events are completed. Use `did + base verb` or `was / were`.
+
+Do not mechanically copy present-tense phrasing from story summaries or draft questions.
+
+| Bad | Good |
+|-----|------|
+| What do I drop into the river? | What did I drop into the river? |
+| Why do I follow the yummy smell? | Why did I follow the yummy smell? |
+| How do I feel before I try the banana? | How did I feel before I tried the banana? |
+| Why am I hungry? | Why was I hungry? |
+| What food do I try first? | What food did I try first? |
+| What happens to my feet? | What happened to my feet? |
+| Why does Chef Pip give me a banana? | Why did Chef Pip give me a banana? |
+
+**Tense validation — before finalizing every Recall and Inference question:**
+1. Does the question refer to an event, action, feeling, state, choice, or change that occurred in the story?
+2. If yes: use Simple Past. Check `do/does → did`, `is/am/are → was/were`, verb after `did` stays base form.
+3. Reject and rewrite any question that asks about a completed story event in the present tense.
+
+**Exception — do not force past tense when the question genuinely asks about a general truth outside the completed story.** Transfer questions about the learner's current life use present tense naturally. Reflection tense depends on the question form. Pattern Practice follows the tense required by its target pattern.
 
 ---
 
@@ -350,6 +410,68 @@ Exception: Pattern Practice, where the learner is asked to repeat or produce an 
 
 ---
 
+## Answer Diversity Rule
+
+**Do not select multiple questions whose expected answers express substantially the same core meaning, even when the questions are worded differently.**
+
+Different wording does not make two questions meaningfully different if the learner would give essentially the same answer.
+
+### What counts as the same answer?
+
+Treat answers as duplicates when their **core semantic content** is the same, even if wording differs.
+
+Examples that count as the same answer:
+- Because you were hungry.
+- You were hungry.
+- Because you had nothing to eat.
+- You wanted food because you were hungry.
+
+If all of these assess essentially the same cause — Poppy's hunger — they share one answer concept.
+
+Similarly:
+- You felt sad. / You were sad. / You felt unhappy.
+may count as the same answer concept when they refer to the same event and same emotion.
+
+### Poppy Bad Example — do not generate
+
+| Question | Core answer concept |
+|----------|---------------------|
+| Why did I follow the yummy smell? | HUNGER |
+| Why did I go to the Rainbow Picnic? | HUNGER |
+| Why did my tummy rumble? | HUNGER |
+
+All three expect `Because you were hungry.` Keep only the strongest one; replace the others with questions that assess different information.
+
+### Answer Concept Check
+
+For each candidate question, internally assign a short answer concept label.
+
+Examples:
+- Why did I follow the yummy smell? → HUNGER
+- How did I feel after I lost my strawberries? → SADNESS
+- Why did I keep trying colorful food? → NEW FOOD TASTED GOOD
+- What food did I try first? → BANANA
+
+Before selecting the final 5:
+1. Compare all answer concepts.
+2. Do not select multiple items with the same answer concept.
+3. Prefer questions that assess different events, reasons, feelings, actions, changes, or story facts.
+4. Replace semantic duplicates before output.
+
+### Important distinction
+
+Do not ban the same keyword automatically. Two answers may share a word but still test different information.
+
+Example:
+- What food did I try first? → A banana. (fact about food choice)
+- What happened after I ate the banana? → Your feet turned yellow. (consequence)
+
+These are different answer concepts even though both involve the banana scene.
+
+The rule is about **duplicate answer meaning** — not duplicate vocabulary.
+
+---
+
 ## Examples of Well-Designed Questions by Type
 
 The following examples are based on the story of **Milo**, who loses his colors, looks for them in the forest, meets colorful animals and objects, and eventually discovers his own colors again.
@@ -429,7 +551,7 @@ B1+: What can we learn from my story?
 
 - Generate exactly **5 items** for every activity type.
 - Internally evaluate more than 5 candidates and select the best 5 based on question quality, story grounding, type correctness, and naturalness.
-- Questions must not overlap in meaning or assess the same idea.
+- Do not select questions whose expected answers express substantially the same core meaning (see Answer Diversity Rule).
 - Cover different parts of the story whenever possible.
 - Prefer WH questions over Yes/No questions.
 - Use natural English suitable for elementary school learners.
@@ -893,6 +1015,8 @@ Before outputting the full question set for each type, verify every item:
 17. Is the language easy to say aloud?
 18. Is the content appropriate for young EFL learners?
 19. Is the Acceptable Criteria a meaning-based evaluation rule — not a translation of the Target Answer?
+20. Story Tense (Recall / Inference only): Does this question ask about a completed story event? If yes, is it in Simple Past?
+21. Answer Diversity: What is the core answer concept? Does another selected question in this set already expect substantially the same core answer? If yes, replace the weaker question.
 
 Replace any item that fails before outputting.
 
