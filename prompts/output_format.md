@@ -66,5 +66,5 @@ Rules:
 - reflection: for yes/no questions use "Yes, because [reason]. / No, because [reason]." format; for open-ended questions use "I think..." or "I believe...". acceptableCriteria must specify what evidence or reasoning makes a strong answer for both Yes and No responses.
 - VOCABULARY: Do not exceed CEFR <<CEFR_LEVEL>> in any question or answer. If a concept requires a word above this level, replace it with a simpler synonym at or below <<CEFR_LEVEL>>. Do not keep the harder word just because it is more precise — always prefer the simpler alternative. Example substitutions: "valuable" → "special" or "important"; "terrified" → "very scared"; "exhausted" → "very tired"; "enormous" → "very big". Apply the sentence structure guide above.
 - All questions and answers must be in English. acceptableCriteria must be in Korean.
-- age must be a single exact number (e.g., "10 years old"), not a range.
+- age must be a single specific number (e.g., "10 years old"), never a range or "not specified". If the story does not state the age explicitly, infer it from context and commit to a number.
 - openingLine must be a single string of natural connected speech, not an array.

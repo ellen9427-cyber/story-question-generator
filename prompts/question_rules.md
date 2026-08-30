@@ -289,17 +289,19 @@ Before finalizing each question, verify that:
 ### 1. Age
 
 Required:
-- Always express a character's age as a specific number.
-- Examples:
-  - 8 years old
-  - 35 years old
+- Always express a character's age as a single specific number followed by "years old" (e.g., "8 years old", "35 years old").
+- If the story does not explicitly state the age, infer it from story context (appearance, grade level, relationships, behavior, etc.) and output the best estimate as a specific number.
+- There is always a reasonable estimate available from context. Always commit to a number.
 
 Forbidden:
 - Do not use vague expressions such as:
-  - adult
-  - child
-  - young person
-  - elderly
+  - "not specified"
+  - "unknown"
+  - "adult"
+  - "child"
+  - "young person"
+  - "elderly"
+  - age ranges such as "8–10 years old"
 
 ---
 
