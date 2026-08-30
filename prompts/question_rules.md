@@ -22,7 +22,8 @@ Requirements:
 - Use **key vocabulary (verbs, adjectives, nouns, etc.) from the story whenever possible**.
 - **This is the only activity where reusing story words is encouraged.**
 - Create natural, grammatically correct sentences suitable for elementary learners.
-- **Progressive difficulty**: Arrange the 5 sentences from simplest to most complex. The first sentence should be the shortest with the most basic vocabulary; each subsequent sentence should be slightly longer or use more complex phrasing, so the 5th sentence is the most challenging of the set.
+- **Scene order first**: Arrange the 5 sentences in chronological scene order (SC01 before SC02, etc.). This takes priority over all other ordering considerations.
+- **Progressive difficulty within scene order**: Within the constraint of scene order, write each sentence to be slightly longer or more complex than the previous one where possible — so that difficulty generally increases from sentence 1 to sentence 5.
 
 #### Recall
 
