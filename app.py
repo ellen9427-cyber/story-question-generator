@@ -298,13 +298,47 @@ Valid JSON only."""
     return json.loads(raw)["openingLine"]
 
 
-def build_excel(result, story_analysis, alt_texts, closing_line=""):
+import re as _re
+
+_BLANK_RE = _re.compile(r'_{2,}')
+_POS_RULES = [
+    (_re.compile(r'\bto\s+$', _re.IGNORECASE), '{verb}'),
+    (_re.compile(r'\b(?:am|is|are|was|were|be|been|being)\s+$', _re.IGNORECASE), '{adjective}'),
+    (_re.compile(r'\b(?:very|quite|really|so|too)\s+$', _re.IGNORECASE), '{adjective}'),
+    (_re.compile(r'\b(?:a|an|the)\s+$', _re.IGNORECASE), '{noun}'),
+]
+
+
+def _blank_to_pos(text: str) -> str:
+    def replace(m):
+        before = text[:m.start()]
+        for pat, pos in _POS_RULES:
+            if pat.search(before):
+                return pos
+        return '{word}'
+    return _BLANK_RE.sub(replace, text)
+
+
+def parse_user_patterns(raw: str) -> list:
+    """Extract pattern templates from user input lines; normalize blank notation."""
+    result = []
+    for line in raw.strip().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        pattern = line.split(',', 1)[0].strip()
+        pattern = _blank_to_pos(pattern)
+        result.append(pattern)
+    return result
+
+
+def build_excel(result, story_analysis, alt_texts, closing_line="", user_patterns=None):
     # Persona sheet (Field / Value)
     persona = result.get("characterPersona", {})
     opening = persona.get("openingLine", "")
     if isinstance(opening, list):
         opening = " ".join(opening)
-    patterns_value = "\n".join(result.get("patterns", []))
+    patterns_value = "\n".join(user_patterns or [])
     persona_rows = [
         {"Field": "Age",          "Value": persona.get("age", "")},
         {"Field": "Gender",       "Value": persona.get("gender", "")},
@@ -339,7 +373,7 @@ def build_excel(result, story_analysis, alt_texts, closing_line=""):
     return buf.getvalue()
 
 
-def build_json_export(result, closing_line=""):
+def build_json_export(result, closing_line="", user_patterns=None):
     """Return a clean export dict: characterPersona (with patterns + closingLine) + questions only."""
     persona = result.get("characterPersona", {})
     opening = persona.get("openingLine", "")
@@ -353,7 +387,7 @@ def build_json_export(result, closing_line=""):
         "coreMessage": persona.get("coreMessage", ""),
         "openingLine": opening,
         "closingLine": closing_line,
-        "patterns":    result.get("patterns", []),
+        "patterns":    user_patterns or [],
     }
     return {
         "characterPersona": export_persona,
@@ -441,7 +475,7 @@ if _raw_cache:
         pass
 
 if _cache_data and "story_analysis" not in st.session_state:
-    for _k in ["story_analysis", "story_text_saved", "result", "alt_texts"]:
+    for _k in ["story_analysis", "story_text_saved", "result", "alt_texts", "user_patterns_saved"]:
         if _cache_data.get(_k):
             st.session_state[_k] = _cache_data[_k]
 
@@ -602,6 +636,7 @@ if "story_analysis" in st.session_state:
                     result_data = json.loads(raw)
                     st.session_state["result"] = result_data
                     st.session_state["closing_line"] = random.choice(CLOSING_LINES)
+                    st.session_state["user_patterns_saved"] = user_patterns
                     st.session_state.pop("opening_line_input", None)
                     _ls.setItem(CACHE_KEY, json.dumps({
                         "saved_at": time.time(),
@@ -609,6 +644,7 @@ if "story_analysis" in st.session_state:
                         "story_text_saved": st.session_state["story_text_saved"],
                         "alt_texts": st.session_state.get("alt_texts"),
                         "result": result_data,
+                        "user_patterns_saved": user_patterns,
                     }))
                 except Exception as e:
                     st.error(f"오류가 발생했습니다: {e}")
@@ -668,11 +704,12 @@ if "result" in st.session_state:
                 st.markdown(f"- {p}")
 
     _closing_line = st.session_state.get("closing_line", "")
+    _export_patterns = parse_user_patterns(st.session_state.get("user_patterns_saved", ""))
     dl_col1, dl_col2 = st.columns(2)
     with dl_col1:
         st.download_button(
             "Excel 다운로드",
-            data=build_excel(result, story_analysis, alt_texts, closing_line=_closing_line),
+            data=build_excel(result, story_analysis, alt_texts, closing_line=_closing_line, user_patterns=_export_patterns),
             file_name="questions.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True,
@@ -680,7 +717,7 @@ if "result" in st.session_state:
     with dl_col2:
         st.download_button(
             "JSON 다운로드",
-            data=json.dumps(build_json_export(result, closing_line=_closing_line), ensure_ascii=False, indent=2),
+            data=json.dumps(build_json_export(result, closing_line=_closing_line, user_patterns=_export_patterns), ensure_ascii=False, indent=2),
             file_name="result.json",
             mime="application/json",
             use_container_width=True,
