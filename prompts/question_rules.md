@@ -332,6 +332,47 @@ Forbidden:
 
 ---
 
+## Sentence Complexity and Naturalness
+
+Do not automatically split a sentence into multiple short sentences simply because the assigned level is low. A lower difficulty level does **not** mean that all sentences must be simple sentences.
+
+Use a short compound or complex sentence when it expresses the relationship between ideas more naturally and clearly. Familiar connectors such as **and**, **but**, **because**, **so**, and **when** may be used when they are appropriate for the assigned level and make the meaning easier to understand.
+
+### Preserve Meaningful Relationships
+
+When two ideas have a clear relationship (cause and effect, contrast, sequence, or condition), prefer a natural connected sentence rather than separating them unnecessarily.
+
+Avoid: **Poppy is hungry. He has nothing to eat.**
+Prefer: **Poppy is hungry because he has nothing to eat.**
+
+The second version clearly shows *why* Poppy is hungry and sounds more natural in context.
+
+### Do Not Equate "Easy" with "Fragmented"
+
+Do not simplify language by mechanically breaking every sentence into short statements, removing useful conjunctions, or turning connected ideas into a list. Sentence simplicity should come from familiar vocabulary, clear word order, limited length, and easy-to-follow meaning — not at the expense of natural English or logical relationships between ideas.
+
+### Pattern Practice
+
+For Pattern Practice, prioritize a sentence that demonstrates the target expression in a **natural, meaningful context**. If the target expression works better as part of a short connected sentence, use that structure.
+
+Example with target expression "nothing to eat":
+- Prefer: **Poppy is hungry because he has nothing to eat.**
+- Over: **Poppy is hungry. He has nothing to eat.**
+
+### Decision Rule
+
+Before splitting a sentence, check:
+- Does combining the ideas make the meaning clearer?
+- Is the connector familiar and appropriate for the selected level?
+- Would splitting the sentence make the English sound choppy or reduce the relationship between ideas?
+- Can the connected sentence still be easily understood by a young EFL learner?
+
+If yes, keep the ideas connected.
+
+**Priority order: Natural meaning → Clear relationship between ideas → User-selected level → Young learner comprehensibility → Sentence simplicity**
+
+---
+
 ## Question Writing Rules
 
 - Every question must consist of exactly **one sentence**.
