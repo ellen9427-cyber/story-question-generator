@@ -352,6 +352,76 @@ Before finalizing each question, verify that:
 - The answer is reasonably clear and not overly broad.
 - The question is engaging and encourages meaningful thinking.
 
+## Acceptable Criteria Generation Rules
+
+For every generated question, also generate an **Acceptable Criteria** statement in Korean explaining what meaning, key information, or sentence structure must be included for the learner's response to be accepted as correct.
+
+Do not require the learner to reproduce the Target Answer word for word. Evaluation should prioritize **meaning and communicative intent** over exact wording.
+
+### General Rules
+
+1. **Do not require an exact match with the Target Answer.** The Target Answer is one example of a correct response, not the only acceptable one. Accept semantically equivalent answers even when the learner uses different wording.
+
+2. **Identify the minimum essential information required for correctness.** Specify the key word, concept, relationship, reason, action, or opinion that must be expressed. Do not require unnecessary details.
+
+3. **Write the Acceptable Criteria in Korean.** Use clear statements such as:
+   - `~라는 내용이 드러나면 정답으로 인정한다.`
+   - `~를 포함하여 ~라는 의미가 되면 정답으로 인정한다.`
+   - `~에 대한 구체적인 내용을 한 가지 이상 말하면 정답으로 인정한다.`
+   - `자신의 의견과 논리적으로 연결되는 합리적인 근거를 제시하면 정답으로 인정한다.`
+
+4. **Judge meaning rather than exact grammar.** Minor grammatical mistakes (word order, articles, tense, singular/plural) should not make an answer incorrect if the intended meaning is clear. Errors that change the core meaning should not be accepted.
+
+5. **Do not make the criteria unnecessarily strict.** Only specify required vocabulary when that word or concept is essential to identifying the correct answer.
+
+6. **Allow multiple natural expressions for the same meaning.** For example, if the expected meaning is that Milo was happy, accept: `happy`, `better`, `He felt happy.`, `He felt better.`
+
+### Criteria by Question Type
+
+**Pattern Practice** — Evaluate whether the learner produces the target sentence structure or pattern. Focus on the grammatical frame, not perfect pronunciation.
+Example criteria: `발음을 명확하게 하지 않아도 Can I {verb phrase}?의 문장 구조로 말하면 정답으로 인정한다.`
+
+**Recall** — Specify the essential story fact (key word or concept) that must appear. Do not require additional explanation.
+Examples:
+- `gray를 포함해서 Milo의 색깔이 회색이 되었다는 내용이 되면 정답으로 인정한다.`
+- `butterfly를 포함해서 Milo가 나비를 봤다는 내용이 드러나면 정답으로 인정한다.`
+
+**Inference** — Specify the reasonable inferred meaning or causal relationship. Accept different wording if it expresses the same valid inference. Do not restrict to one interpretation unless the story clearly supports only one.
+Examples:
+- `Milo의 색깔이 회색으로 변했거나 자신의 색깔을 잃었기 때문이라는 내용이 드러나면 정답으로 인정한다.`
+- `Milo가 행복해졌거나 기분이 나아졌다는 내용이 포함되면 정답으로 인정한다.`
+
+**Transfer** — Accept any personal answer that responds to the question, is relevant to the topic, and contains enough concrete information to communicate the learner's idea. There is usually no single correct content answer.
+Examples:
+- `학생이 밖에서 볼 수 있는 대상과 색깔에 대해 한 가지 이상 구체적으로 말하면 정답으로 인정한다.`
+- `자신의 외모, 성격, 능력 등에서 특별하다고 생각하는 점을 한 가지 이상 말하면 정답으로 인정한다.`
+
+**Reflection** — Multiple reasonable answers are expected. Criteria must describe valid answer conditions, not one predetermined opinion.
+- For Yes/No questions: cover both Yes and No positions when both are reasonable.
+- For character evaluation: allow different judgments when both can reasonably be supported.
+- For lesson questions: accept different wording that expresses a story-supported lesson.
+- The learner's reasoning is more important than matching a predetermined opinion.
+
+Example (Yes/No):
+`Yes로 답한 경우 [이유 A] 또는 유사한 내용을 근거로 들면 정답으로 인정한다. No로 답한 경우 [이유 B] 또는 유사한 내용을 근거로 들면 정답으로 인정한다. 이외에도 자신의 의견과 논리적으로 연결되는 합리적인 근거를 제시하면 정답으로 인정한다.`
+
+### Target Answer vs. Acceptable Criteria
+
+**Target Answer** — One or more natural examples of what a strong learner response may look like.
+**Acceptable Criteria** — The minimum semantic or structural condition required. Must generalize the Target Answer into a meaning-based evaluation rule, not simply translate it into Korean.
+
+### Final Check Before Writing Each Criteria
+
+- What is the minimum meaning required to answer this question?
+- Is an exact word necessary, or would a synonym also work?
+- Are multiple opinions possible? If Yes/No are both reasonable, have both been covered?
+- For personal questions: am I evaluating relevance rather than the learner's personal choice?
+- For Pattern Practice: am I evaluating the target structure, not perfect pronunciation?
+
+**Priority order: Correct meaning → Required story information or target structure → Logical relevance → Learner communicative intent → Grammatical accuracy → Exact wording**
+
+---
+
 ## Global Rules
 
 ### 1. Age
