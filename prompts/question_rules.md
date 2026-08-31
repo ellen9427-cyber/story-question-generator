@@ -312,6 +312,26 @@ Bad (surface detail — not connected to core conflict or change):
 - What do you like to do with your friends?
 - What is your favorite color?
 
+#### Meaningful Transfer Responses
+
+Transfer questions should give the learner something concrete to talk about.
+
+Whenever natural, prefer `When`, `What`, `Who`, `Where`, or `How` questions over Yes/No questions.
+
+Examples:
+- `Do you get scared?` → `When do you get scared?`
+- `Do you feel brave?` → `What helps you feel brave?`
+- `Do you guess things?` → `What do you do when you see something strange?`
+- `Do you like new friends?` → `How do you feel when you make a new friend?`
+
+Level-appropriate target answers can remain short but must be concrete and complete:
+- `I get scared at night.`
+- `My mom helps me feel brave.`
+- `I look at it carefully.`
+- `I feel happy.`
+
+Use a Yes/No Transfer question only when that format is the most natural choice. When the question asks about an opinion, preference, or willingness, add `Why or why not?` when appropriate and include reasons in both the target answers and evaluation criteria.
+
 ---
 
 ### Reflection
@@ -338,14 +358,15 @@ Wording depends on level:
 - A2: "Was it a good choice? Why?"
 - B1+: "Do you think I made a good choice? Why?"
 
-**Type 3 — Story Lesson**
-Ask learners to think about the overall meaning or message of the story.
+**Type 3 — Story Lesson (fallback only)**
+Ask learners to think about the overall meaning or message of the story. Use only when there are not enough meaningful, non-duplicative, scene-based Reflection questions. Generate no more than one.
 
 Cognitive intent: reflect on the theme.
 Wording depends on level:
-- Pre-A1/A1: "What can we learn?" / "What did I learn?"
-- A2: "What is the lesson in this story?"
-- B1+: "What can we learn from this story? Why?"
+- Pre-A1/A1 and A2: "What did you learn from my story?"
+- B1+: "What is the most important lesson in the story?"
+
+Never use: `What can we learn?` / `What did I learn?` / `What is the lesson in this story?` / `What can we learn from my story?`
 
 **Do not reproduce complex high-level question structures at lower CEFR levels.** The cognitive type stays the same; the syntax changes with the level.
 
@@ -528,11 +549,10 @@ Pre-A1/A1: Was I right to ask others for their colors?
 A2: Was it a good choice to ask others for their colors? Why?
 B1+: Do you think it was a good idea to ask others for their colors? Why or why not?
 
-**Type 3 — Story Lesson (level examples)**
+**Type 3 — Story Lesson (level examples, fallback only)**
 
-Pre-A1/A1: What can we learn?
-A2: What is the lesson in this story?
-B1+: What can we learn from my story?
+Pre-A1/A1 and A2: What did you learn from my story?
+B1+: What is the most important lesson in the story?
 
 ### Important: Classify by thinking required, not by question wording
 
@@ -543,7 +563,7 @@ B1+: What can we learn from my story?
 | Transfer | What makes you special? | Connect story to own experience |
 | Reflection — Situation | Would you look for your colors too? | Imagine making a decision as the character |
 | Reflection — Evaluation | Was I right to ask others for their colors? | Judge the character's behavior |
-| Reflection — Lesson | What can we learn? | Reflect on the overall message |
+| Reflection — Lesson | What did you learn from my story? | Reflect on the overall message |
 
 ---
 
@@ -584,6 +604,17 @@ Allowed:
 - Simple Past
 - Present Progressive (basic actions only)
 - Basic questions using What, Where, Who, Is/Are, Do/Does, Can
+- Basic `When` questions that invite a concrete answer:
+  - `When do you get scared?`
+- One short `when` or `after` clause when it is necessary to identify the story event:
+  - `Where was I when I saw the dark shape?`
+  - `How did I feel after I found the kitten?`
+- A short purpose phrase when it clarifies an action:
+  - `What did I take to check the shape?`
+
+These structures are allowed only when they use familiar words and remain easy for a young learner to process.
+
+A low level does not require removing essential context.
 
 Forbidden:
 - Passive voice
@@ -697,11 +728,12 @@ CEFR controls both vocabulary and question sentence structure. Easy vocabulary a
 ### Pre-A1 / A1
 
 Use:
-- Very short, direct spoken questions
-- Basic high-frequency words
-- One clear idea per question
-- Simple What / Who / Where / Why / How questions
-- Short Yes/No questions
+- Short, direct, and self-contained spoken questions
+- Questions that preserve enough context to identify the relevant event
+- WH questions that invite a concrete response
+- Yes/No questions only when Yes/No is the most natural response format
+
+Do not shorten a question until its meaning becomes unclear. At lower levels, simplify vocabulary and grammar rather than deleting necessary context.
 
 Avoid:
 - "Do you think + full clause" (too complex to process in spoken form)
@@ -709,18 +741,22 @@ Avoid:
 - Embedded clauses or nested questions
 - Long conditional structures ("If you were..., would you...?")
 - Abstract wording when a concrete verb is available
+- Vague questions that could refer to more than one scene (e.g., `Where was I?`, `How did I feel then?`)
 
 Good:
 - What did I lose?
 - Why was I sad?
+- Where was I when I saw the dark shape?
+- How did I feel after I found the kitten?
 - What new food do you want to try?
 - Would you try it too?
 - Was I right to try it?
-- What can we learn?
 
 Bad:
 - Do you think it was a good idea for Poppy to try the banana?
 - Do you think I made the right decision when I decided to try a new kind of food?
+- How did I feel then?
+- Where was I?
 
 ### A2
 
@@ -773,11 +809,14 @@ These frames show natural question syntax for each level. They are not formulas 
 ### Recall
 
 Pre-A1/A1:
-- What did I ___?
-- Who did I ___?
-- Where did I ___?
-- What was ___?
-- What color was ___?
+
+Do not use context-free frames mechanically. Use a short context phrase when the question could refer to more than one scene:
+
+- Where was I when I ___?
+- What did I see at ___?
+- What did I take to ___?
+- What was the ___ near ___?
+- What came into ___?
 - What did ___ do?
 
 A2–B1+:
@@ -787,10 +826,13 @@ A2–B1+:
 ### Inference
 
 Pre-A1/A1:
+- How did I feel when ___?
+- How did I feel after ___?
+- How did ___ feel when ___?
 - Why did I ___?
 - Why was I ___?
-- How did I feel?
-- How did ___ feel?
+
+Do not use vague questions such as `How did I feel then?`, `Why did I do that?`, or `What did I think after that?` Name the relevant event directly in the question.
 
 A2–B1+:
 - Why do you think I ___?
@@ -800,10 +842,15 @@ A2–B1+:
 ### Transfer
 
 Pre-A1/A1:
-- What ___ do you like?
-- Do you like ___?
-- What new ___ do you want to try?
+
+Preferred frames:
+- When do you ___?
+- What helps you ___?
+- What do you do when ___?
+- Who helps you ___?
 - How do you feel when ___?
+
+Do not default to `Do you ___?` or `Do you like ___?` when a WH question would give the learner more to talk about.
 
 A2–B1+:
 - What do you do when ___?
@@ -817,17 +864,17 @@ All Transfer questions must connect to a Transfer Anchor.
 Pre-A1/A1:
 - Type 1: Would you ___ too? / What would you do?
 - Type 2: Was I right to ___? / Was my choice good?
-- Type 3: What can we learn? / What did I learn?
+- Type 3 (fallback only): What did you learn from my story?
 
 A2:
 - Type 1: What would you do if ___?
 - Type 2: Was it a good choice? Why?
-- Type 3: What is the lesson in this story?
+- Type 3 (fallback only): What did you learn from my story?
 
 B1+:
 - Type 1: If you were me, would you ___? Why?
 - Type 2: Do you think I made a good choice? Why?
-- Type 3: What can we learn from my story?
+- Type 3 (fallback only): What is the most important lesson in the story?
 
 ---
 
@@ -862,9 +909,13 @@ If yes, keep the ideas connected.
 
 ## Question Writing Rules
 
-- Every question must consist of exactly **one sentence**.
-- Do not add any introductory or contextual sentence before the question.
-- Do not include information that directly reveals or strongly hints at the answer.
+- A Recall or Inference item should normally contain one self-contained question sentence. Include necessary context inside the question rather than relying on the scene number or previous item.
+- A Reflection item may contain one short first-person context sentence followed by one closely connected evaluation question and `Why?` or `Why not?`
+- Examples:
+  - `Where was I when I saw the dark shape?`
+  - `How did I feel after I found the kitten?`
+  - `I took my flashlight to check the shape. Was that a good idea? Why?`
+- Do not add context that reveals the answer. Include only the information needed to identify the event or action being discussed.
 - Each question should assess only one idea.
 - Keep wording clear, concise, and unambiguous.
 - Do not quote or copy sentences directly from the story unless required for Pattern Practice.
@@ -1096,13 +1147,34 @@ When rules compete, apply priorities in this order:
 
 When writing `acceptableCriteria` in Korean, select the smallest essential English target word from the model answer.
 
-#### Target Word Selection
+#### Select the Smallest Meaningful Target Unit
 
-* Prefer one essential content word rather than a phrase or complete answer.
-* Use a noun, adjective, or verb that represents the key answer.
-* Do not copy a multiword phrase from the target answer when one word is sufficient.
-* The target word alone does not determine correctness. The learner's full response must also express the correct meaning.
-* Do not accept a response merely because it contains the target word in an incorrect or unrelated statement.
+Select the smallest English unit needed to identify the correct meaning.
+
+Use:
+
+1. one word when one word is sufficient;
+2. a short phrase when separating it would weaken, broaden, change, or reverse the meaning;
+3. a complete structure only when the structure itself is the Pattern Practice target.
+
+One-word targets:
+* `green`
+* `yellow`
+* `flashlight`
+* `basket`
+
+Acceptable short-phrase targets:
+* `dark shape`
+* `not scared`
+
+`dark shape` may remain a phrase because `shape` alone loses an important part of what the learner must identify. `not scared` may remain a phrase because `scared` alone could match the opposite meaning.
+
+Do not copy an unnecessarily long verb-and-object sequence when a smaller unit is sufficient.
+
+Incorrect target: `see the shape`
+Correct target: `shape`
+
+The learner's complete response must still express the correct meaning. The presence of the target word or phrase alone is not sufficient when the surrounding response is incorrect or unrelated.
 
 Examples:
 
@@ -1205,26 +1277,22 @@ Use this exception only for Pattern Practice or when producing the complete stru
 
 ### 2. Formatting Multiple Target Answers
 
-When there are two or more valid model answers, separate them with a slash.
+In JSON, place each valid answer in a separate `targetAnswers` array element. Each element must be a complete and natural response. If the answers are later combined into one Excel or LCMS field, display them with `/` between answers.
 
-Use this format:
+Example JSON:
 
-* Yes, I do. I can learn new things. / No, I do not. I like what I already know.
-* You felt surprised. / You felt excited.
+```json
+"targetAnswers": [
+  "Yes, I do. I can learn new things.",
+  "No, I do not. I like what I already know."
+]
+```
 
-Do not separate multiple answers with commas or periods followed by commas.
+Displayed form:
 
-Incorrect:
+> Yes, I do. I can learn new things. / No, I do not. I like what I already know.
 
-* Yes, I do., No, I do not.
-* You felt surprised., You felt happy.
-
-Correct:
-
-* Yes, I do. / No, I do not.
-* You felt surprised. / You felt happy.
-
-Each answer separated by a slash must be a complete and natural response.
+Each answer must be a complete and natural response. Do not place multiple slash-separated answers inside one JSON array element.
 
 ### 3. Evidence-Grounded Recall and Inference Questions
 
@@ -1460,9 +1528,10 @@ Example Target Answer:
 
 Do not use:
 
+* What can we learn?
+* What did I learn?
+* What is the lesson in this story?
 * What can we learn from my story?
-
-Because the character is asking the learner to express the learner's own understanding, `you` is more natural than `we`.
 
 Additional rules:
 
@@ -1506,12 +1575,12 @@ Acceptable Criteria:
 Before returning the final output, review all questions as one complete set and confirm that:
 
 1. Each `acceptableCriteria` uses the smallest essential English target word whenever possible.
-2. A phrase is used as the target only when the complete grammatical structure is the learning objective.
-3. No English target word or structure is enclosed in quotation marks.
+2. A short phrase is used when its words form a necessary meaning unit, such as `dark shape` or `not scared`. A complete sentence structure is used only when the structure itself is the Pattern Practice objective.
+3. No English target word, phrase, sentence, or Pattern Practice structure is enclosed in quotation marks in `acceptableCriteria`.
 4. English target words are not unnecessarily translated and repeated as Korean target words.
 5. The English target word is mentioned only once.
-6. Multiple target answers are separated with a slash.
-7. Each answer separated by a slash is complete and natural.
+6. JSON alternatives are stored as separate array elements and are joined with `/` only for single-field display.
+7. Each answer is complete and natural.
 8. Every Recall and Inference answer has sufficient story evidence.
 9. No unsupported emotion is presented as a definite fact.
 10. Every evaluated action is an actual action or choice.
@@ -1528,3 +1597,9 @@ Before returning the final output, review all questions as one complete set and 
 21. No more than one general lesson question is generated.
 22. `What did you learn from my story?` and `What is the most important lesson in the story?` do not appear together.
 23. No question is included merely to fill the required number of items.
+24. Every question is understandable without its `relatedScene` value.
+25. Necessary context has not been removed merely to satisfy a lower CEFR level.
+26. No Recall or Inference question uses vague wording such as `Where was I?`, `What did I see?`, or `How did I feel then?` when multiple contexts are possible.
+27. Transfer questions use WH forms whenever they create a more concrete learner response.
+28. Yes/No Transfer questions are used only when they are the most natural format.
+29. Every target answer is a complete and natural response.
