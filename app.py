@@ -718,12 +718,14 @@ if "result" in st.session_state:
 
     _closing_line = st.session_state.get("closing_line", "")
     _export_patterns = parse_user_patterns(st.session_state.get("user_patterns_saved", ""))
+    _char_name = persona.get("name", "character").strip() or "character"
+    _base_name = f"{_char_name}_Talking"
     dl_col1, dl_col2 = st.columns(2)
     with dl_col1:
         st.download_button(
             "Excel 다운로드",
             data=build_excel(result, story_analysis, alt_texts, closing_line=_closing_line, user_patterns=_export_patterns),
-            file_name="questions.xlsx",
+            file_name=f"{_base_name}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True,
         )
@@ -731,7 +733,7 @@ if "result" in st.session_state:
         st.download_button(
             "JSON 다운로드",
             data=json.dumps(build_json_export(result, closing_line=_closing_line, user_patterns=_export_patterns), ensure_ascii=False, indent=2),
-            file_name="result.json",
+            file_name=f"{_base_name}.json",
             mime="application/json",
             use_container_width=True,
         )
