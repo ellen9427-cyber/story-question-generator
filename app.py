@@ -332,6 +332,18 @@ def parse_user_patterns(raw: str) -> list:
     return result
 
 
+def _scene_key(q: dict) -> tuple:
+    """Sort key for a question dict: numeric part of relatedScene, then raw string as tiebreak."""
+    scene = q.get("relatedScene", "")
+    digits = "".join(filter(str.isdigit, scene))
+    return (int(digits) if digits else 9999, scene)
+
+
+def _sort_questions(questions: dict) -> dict:
+    """Return a new questions dict with each type's list sorted by scene order."""
+    return {k: sorted(v, key=_scene_key) for k, v in questions.items()}
+
+
 def build_excel(result, story_analysis, alt_texts, closing_line="", user_patterns=None):
     # Persona sheet (Field / Value)
     persona = result.get("characterPersona", {})
@@ -352,8 +364,9 @@ def build_excel(result, story_analysis, alt_texts, closing_line="", user_pattern
 
     # Questions sheet
     rows = []
+    sorted_questions = _sort_questions(result.get("questions", {}))
     for type_key, type_label in QUESTION_TYPES:
-        for q in result.get("questions", {}).get(type_key, []):
+        for q in sorted_questions.get(type_key, []):
             scene = q.get("relatedScene", "")
             target_answer = q.get("targetAnswer") or ", ".join(q.get("targetAnswers", []))
             rows.append({
@@ -391,7 +404,7 @@ def build_json_export(result, closing_line="", user_patterns=None):
     }
     return {
         "characterPersona": export_persona,
-        "questions":        result.get("questions", {}),
+        "questions":        _sort_questions(result.get("questions", {})),
     }
 
 
