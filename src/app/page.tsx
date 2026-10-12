@@ -65,6 +65,9 @@ export default function Home() {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("patternPractice");
   const [copied, setCopied] = useState(false);
+  const [openingRevisePrompt, setOpeningRevisePrompt] = useState("");
+  const [openingReviseLoading, setOpeningReviseLoading] = useState(false);
+  const [openingReviseError, setOpeningReviseError] = useState("");
 
   const toggleType = (key: string) => {
     setSelectedTypes((prev) =>
@@ -116,6 +119,42 @@ export default function Home() {
       setError(e instanceof Error ? e.message : "오류가 발생했습니다.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRegenerateOpening = async () => {
+    if (!openingRevisePrompt.trim() || !result) return;
+    setOpeningReviseLoading(true);
+    setOpeningReviseError("");
+    try {
+      const res = await fetch("/api/regenerate-opening", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentOpeningLine: result.characterPersona.openingLine,
+          modificationRequest: openingRevisePrompt,
+          characterInfo,
+          coreMessage,
+          storyText,
+          protagonistName,
+          apiProvider,
+          apiKey,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "재생성 실패");
+      setResult({
+        ...result,
+        characterPersona: {
+          ...result.characterPersona,
+          openingLine: data.openingLine,
+        },
+      });
+      setOpeningRevisePrompt("");
+    } catch (e: unknown) {
+      setOpeningReviseError(e instanceof Error ? e.message : "오류가 발생했습니다.");
+    } finally {
+      setOpeningReviseLoading(false);
     }
   };
 
@@ -338,9 +377,32 @@ export default function Home() {
                   </div>
                   <div className="col-span-2">
                     <span className="text-gray-500">Opening Line</span>
-                    <p className="font-medium text-gray-800 italic">
+                    <p className="font-medium text-gray-800 italic mb-2">
                       &ldquo;{result.characterPersona.openingLine}&rdquo;
                     </p>
+                    <div className="flex gap-2 mt-1">
+                      <input
+                        type="text"
+                        value={openingRevisePrompt}
+                        onChange={(e) => setOpeningRevisePrompt(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !openingReviseLoading) handleRegenerateOpening();
+                        }}
+                        placeholder="수정 요청 입력 (예: 더 활기차게, 인사 추가, shorter)"
+                        className="flex-1 border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={openingReviseLoading}
+                      />
+                      <button
+                        onClick={handleRegenerateOpening}
+                        disabled={openingReviseLoading || !openingRevisePrompt.trim()}
+                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm font-medium rounded transition-colors whitespace-nowrap"
+                      >
+                        {openingReviseLoading ? "생성 중..." : "재생성"}
+                      </button>
+                    </div>
+                    {openingReviseError && (
+                      <p className="text-red-600 text-xs mt-1">{openingReviseError}</p>
+                    )}
                   </div>
                 </div>
               </div>
