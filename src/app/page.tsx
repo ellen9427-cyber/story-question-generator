@@ -114,7 +114,9 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || "생성 실패");
       setResult(data.result);
       setClosingLine(CLOSING_LINES[Math.floor(Math.random() * CLOSING_LINES.length)]);
-      if (selectedTypes.length > 0) setActiveTab(selectedTypes[0]);
+      if (selectedTypes.length > 0 && !selectedTypes.includes(activeTab)) {
+        setActiveTab(selectedTypes[0]);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "오류가 발생했습니다.");
     } finally {
