@@ -66,6 +66,8 @@ Format:
 
 The sentence inside the quotation marks must include the provided target pattern.
 
+**Subject rule:** Pattern Practice sentences may use any grammatically appropriate subject — the character's name, he, she, they, it, there, or I. Do NOT default to "I" just because the sentence describes the Speaking Main Character's action or experience. "I" is only used when the target pattern itself requires a first-person subject (e.g., "I used to ___") or when it appears verbatim in the story text.
+
 ---
 
 ### Story-Grounded Pattern Sentence Generation
