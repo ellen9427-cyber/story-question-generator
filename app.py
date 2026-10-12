@@ -523,10 +523,10 @@ with st.sidebar:
     )
 
     st.subheader("핵심 패턴 (Pattern Practice용)")
-    st.caption("패턴, 예시 형식으로 한 줄씩 입력 (쉼표로 구분)")
+    st.caption("패턴, 예시 1, 예시 2 형식으로 입력(쉼표로 구분)")
     user_patterns = st.text_area(
         "패턴",
-        placeholder="not {adj} anymore, I'm not scared anymore.\nI used to {verb}, I used to give up easily.",
+        placeholder="not {adj} anymore, I'm not scared anymore., I'm not afraid anymore.",
         height=120,
         label_visibility="collapsed",
     )
